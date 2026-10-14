@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
 import Button from 'antd/lib/button';
@@ -20,6 +21,7 @@ function CreateOrganizationForm(): JSX.Element {
     const dispatch = useDispatch();
     const history = useHistory();
     const [creating, setCreating] = useState(false);
+    const { t } = useTranslation('organizations');
     const MAX_SLUG_LEN = 16;
     const MAX_NAME_LEN = 64;
 
@@ -54,10 +56,10 @@ function CreateOrganizationForm(): JSX.Element {
             <Form.Item
                 hasFeedback
                 name='slug'
-                label='Short name'
+                label={t('Short name')}
                 rules={[
-                    { required: true, message: 'Short name is a required field' },
-                    { max: MAX_SLUG_LEN, message: `Short name must not exceed ${MAX_SLUG_LEN} characters` },
+                    { required: true, message: t('Short name is a required field') },
+                    { max: MAX_SLUG_LEN, message: t('Short name must not exceed {{max}} characters', { max: MAX_SLUG_LEN }) },
                     { ...validationPatterns.validateOrganizationSlug },
                 ]}
             >
@@ -66,28 +68,43 @@ function CreateOrganizationForm(): JSX.Element {
             <Form.Item
                 hasFeedback
                 name='name'
-                label='Full name'
-                rules={[{ max: MAX_NAME_LEN, message: `Full name must not exceed ${MAX_NAME_LEN} characters` }]}
+                label={t('Full name')}
+                rules={[{
+                    max: MAX_NAME_LEN,
+                    message: t('Full name must not exceed {{max}} characters', { max: MAX_NAME_LEN }),
+                }]}
             >
                 <Input />
             </Form.Item>
-            <Form.Item hasFeedback name='description' label='Description'>
+            <Form.Item hasFeedback name='description' label={t('Description')}>
                 <Input.TextArea rows={3} />
             </Form.Item>
-            <Form.Item hasFeedback name='email' label='Email' rules={[{ type: 'email', message: 'The input is not a valid E-mail' }]}>
+            <Form.Item
+                hasFeedback
+                name='email'
+                label={t('common::Email')}
+                rules={[{ type: 'email', message: t('The input is not a valid E-mail') }]}
+            >
                 <Input autoComplete='email' placeholder='support@organization.com' />
             </Form.Item>
-            <Form.Item hasFeedback name='phoneNumber' label='Phone number' rules={[{ ...validationPatterns.validatePhoneNumber }]}>
+            <Form.Item
+                hasFeedback
+                name='phoneNumber'
+                label={t('Phone number')}
+                rules={[{ ...validationPatterns.validatePhoneNumber }]}
+            >
                 <Input autoComplete='phoneNumber' placeholder='+44 5555 555555' />
             </Form.Item>
-            <Form.Item hasFeedback name='location' label='Location'>
-                <Input autoComplete='location' placeholder='Country, State/Province, Address, Postal code' />
+            <Form.Item hasFeedback name='location' label={t('Location')}>
+                <Input autoComplete='location' placeholder={t('Country, State/Province, Address, Postal code')} />
             </Form.Item>
             <Form.Item>
                 <Space className='cvat-create-organization-form-buttons-block' align='end'>
-                    <Button className='cvat-cancel-new-organization-button' onClick={() => history.goBack()}>Cancel</Button>
+                    <Button className='cvat-cancel-new-organization-button' onClick={() => history.goBack()}>
+                        {t('Cancel')}
+                    </Button>
                     <Button className='cvat-submit-new-organization-button' loading={creating} disabled={creating} htmlType='submit' type='primary'>
-                        Submit
+                        {t('Submit')}
                     </Button>
                 </Space>
             </Form.Item>

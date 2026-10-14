@@ -5,6 +5,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from 'i18next';
 import { shallowEqual } from 'utils/redux';
 import message from 'antd/lib/message';
 
@@ -103,9 +104,12 @@ function LabelsListComponent(): JSX.Element {
                 updatedComponentShortcuts[key] = {
                     ...updatedComponentShortcuts[key],
                     nonActive: false,
-                    name: `Switch label to ${labelName}`,
-                    description: `Changes the label to ${labelName} for selected objects, the activated
+                    name: i18n.t('shortcuts::Switch label to {{label}}', { label: labelName }),
+                    description: i18n.t(
+                        `shortcuts::Changes the label to {{label}} for selected objects, the activated
                         object, or the next drawn object if no objects are selected or activated`,
+                        { label: labelName },
+                    ),
                 };
             }
         }
@@ -136,7 +140,7 @@ function LabelsListComponent(): JSX.Element {
 
                 if (!labelIsApplicable) {
                     message.destroy();
-                    message.warning(`Label "${label.name}" cannot be applied to every selected object`);
+                    message.warning(i18n.t('annotation::Label "{{name}}" cannot be applied to every selected object', { name: label.name }));
                     return;
                 }
 
@@ -178,7 +182,7 @@ function LabelsListComponent(): JSX.Element {
                 }
 
                 message.destroy();
-                message.success(`Default label has been changed to "${label.name}"`);
+                message.success(i18n.t('annotation::Default label has been changed to "{{name}}"', { name: label.name }));
             }
         }
     };
@@ -227,7 +231,7 @@ function LabelsListComponent(): JSX.Element {
         <div className='cvat-objects-sidebar-labels-list'>
             <GlobalHotKeys keyMap={subKeyMap(componentShortcuts, keyMap)} handlers={handlers} />
             <div className='cvat-objects-sidebar-labels-list-header'>
-                <Text>{`Items: ${labels.length}`}</Text>
+                <Text>{i18n.t('annotation::Items: {{count}}', { count: labels.length })}</Text>
             </div>
             {labelIDs.map(
                 (labelID: number): JSX.Element => (

@@ -5,6 +5,7 @@
 import './styles.scss';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import {
     useHistory, useRouteMatch,
@@ -34,6 +35,7 @@ const core = getCore();
 function WebhooksPage(): JSX.Element | null {
     const dispatch = useDispatch();
     const history = useHistory();
+    const { t } = useTranslation('webhooks');
     const {
         organization,
         fetching,
@@ -68,7 +70,7 @@ function WebhooksPage(): JSX.Element | null {
             size='large'
         >
             <LeftOutlined />
-            {projectsMatch ? 'Back to project' : 'Back to organization'}
+            {projectsMatch ? t('Back to project') : t('Back to organization')}
         </Button>
     );
 

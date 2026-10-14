@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
 import {
     Attribute, ObjectState, ObjectType, ShapeType,
 } from 'cvat-core-wrapper';
@@ -29,10 +30,10 @@ interface SelectionAttributeState {
     attributes: Attribute[];
 }
 
-const LOCK_DISABLED_REASON = 'Ground truth objects cannot be locked or unlocked';
-const PIN_DISABLED_REASON = 'Locked, ground truth, tag, and skeleton element objects cannot be pinned';
-const OCCLUDED_DISABLED_REASON = 'Locked and ground truth objects cannot be occluded or unoccluded';
-const HIDDEN_DISABLED_REASON = 'Locked and ground truth objects cannot be hidden or shown';
+const LOCK_DISABLED_REASON = (): string => i18n.t('annotation::Ground truth objects cannot be locked or unlocked');
+const PIN_DISABLED_REASON = (): string => i18n.t('annotation::Locked, ground truth, tag, and skeleton element objects cannot be pinned');
+const OCCLUDED_DISABLED_REASON = (): string => i18n.t('annotation::Locked and ground truth objects cannot be occluded or unoccluded');
+const HIDDEN_DISABLED_REASON = (): string => i18n.t('annotation::Locked and ground truth objects cannot be hidden or shown');
 
 export function getSelectedStates(states: ObjectState[], selectedStatesID: number[]): ObjectState[] {
     const selectedIDs = new Set(selectedStatesID);
@@ -61,21 +62,21 @@ export function getSelectionToggleState(
     const active = states.length > 0 && states.every((state: ObjectState): boolean => state[property]);
     let disabledReason: string | null = null;
     if (property === 'lock' && states.some((state: ObjectState): boolean => state.isGroundTruth)) {
-        disabledReason = LOCK_DISABLED_REASON;
+        disabledReason = LOCK_DISABLED_REASON();
     } else if (property === 'pinned' && states.some((state: ObjectState): boolean => (
         state.lock || state.isGroundTruth ||
         state.objectType === ObjectType.TAG ||
         (state.shapeType === ShapeType.POINTS && Number.isInteger(state.parentID))
     ))) {
-        disabledReason = PIN_DISABLED_REASON;
+        disabledReason = PIN_DISABLED_REASON();
     } else if (property === 'occluded' && states.some((state: ObjectState): boolean => (
         state.lock || state.isGroundTruth
     ))) {
-        disabledReason = OCCLUDED_DISABLED_REASON;
+        disabledReason = OCCLUDED_DISABLED_REASON();
     } else if (property === 'hidden' && states.some((state: ObjectState): boolean => (
         state.lock || state.isGroundTruth
     ))) {
-        disabledReason = HIDDEN_DISABLED_REASON;
+        disabledReason = HIDDEN_DISABLED_REASON();
     }
 
     return {
@@ -120,7 +121,7 @@ export function getSelectionGroupState(states: ObjectState[]): SelectionGroupSta
     const alreadyInSameGroup = states.length > 1 && !!groupID &&
         states.every((state: ObjectState): boolean => state.group?.id === groupID);
     const disabledReason = states.some((state: ObjectState): boolean => state.isGroundTruth) ?
-        'Ground truth objects cannot be grouped or ungrouped' : null;
+        i18n.t('annotation::Ground truth objects cannot be grouped or ungrouped') : null;
 
     return {
         canGroup: disabledReason === null && states.length > 1 && !alreadyInSameGroup,
@@ -137,15 +138,15 @@ export function getSelectionAttributeState(states: ObjectState[]): SelectionAttr
     const attributes = sameLabel ? [...states[0].label.attributes] : [];
     let disabledReason: string | null = null;
     if (!states.length) {
-        disabledReason = 'Select at least one object';
+        disabledReason = i18n.t('annotation::Select at least one object');
     } else if (states.some((state: ObjectState): boolean => state.lock)) {
-        disabledReason = 'Attributes cannot be changed for locked objects';
+        disabledReason = i18n.t('annotation::Attributes cannot be changed for locked objects');
     } else if (states.some((state: ObjectState): boolean => state.isGroundTruth)) {
-        disabledReason = 'Ground truth objects cannot be updated';
+        disabledReason = i18n.t('annotation::Ground truth objects cannot be updated');
     } else if (!sameLabel) {
-        disabledReason = 'Selected objects have different labels';
+        disabledReason = i18n.t('annotation::Selected objects have different labels');
     } else if (!attributes.length) {
-        disabledReason = 'The selected label has no attributes';
+        disabledReason = i18n.t('annotation::The selected label has no attributes');
     }
 
     return {

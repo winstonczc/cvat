@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Icon from '@ant-design/icons';
 
 import { GroupIcon } from 'icons';
@@ -27,14 +28,15 @@ function GroupControl(props: Props): JSX.Element {
     } = props;
 
     const { normalizedKeyMap } = useSelector((state: CombinedState) => state.shortcuts);
+    const { t } = useTranslation('annotation');
 
     const title = [];
     if (canvasInstance instanceof Canvas) {
-        title.push(`Group shapes ${normalizedKeyMap.SWITCH_GROUP_MODE_STANDARD_CONTROLS}`);
-        title.push(`Select and press ${normalizedKeyMap.RESET_GROUP_STANDARD_CONTROLS} to reset a group.`);
+        title.push(`${t('Group shapes')} ${normalizedKeyMap.SWITCH_GROUP_MODE_STANDARD_CONTROLS}`);
+        title.push(t('Select and press {{shortcut}} to reset a group.', { shortcut: normalizedKeyMap.RESET_GROUP_STANDARD_CONTROLS }));
     } else if (canvasInstance instanceof Canvas3d) {
-        title.push(`Group shapes/tracks ${normalizedKeyMap.SWITCH_GROUP_MODE_STANDARD_3D_CONTROLS}`);
-        title.push(`Select and press ${normalizedKeyMap.RESET_GROUP_STANDARD_3D_CONTROLS} to reset a group.`);
+        title.push(`${t('Group shapes/tracks')} ${normalizedKeyMap.SWITCH_GROUP_MODE_STANDARD_3D_CONTROLS}`);
+        title.push(t('Select and press {{shortcut}} to reset a group.', { shortcut: normalizedKeyMap.RESET_GROUP_STANDARD_3D_CONTROLS }));
     }
 
     return disabled ? (

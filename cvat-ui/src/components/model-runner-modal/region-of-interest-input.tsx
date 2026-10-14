@@ -5,6 +5,8 @@
 import React, {
     useEffect, useState, useCallback, useRef,
 } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import { Row, Col } from 'antd/lib/grid';
 import InputNumber from 'antd/lib/input-number';
 import Button from 'antd/lib/button';
@@ -58,6 +60,7 @@ function getInputFromRegionOfInterest(regionOfInterest: Readonly<RegionOfInteres
 }
 
 function RegionOfInterestInputComponent(props: Props): JSX.Element {
+    const { t } = useTranslation('models');
     const {
         frameWidth, frameHeight, canvasInstance, onSubmit,
     } = props;
@@ -156,7 +159,7 @@ function RegionOfInterestInputComponent(props: Props): JSX.Element {
                 const drawnInput = getInputFromRegionOfInterest(clamped);
                 if (!isValidRegionOfInterestInput(drawnInput)) {
                     notification.error({
-                        message: 'Region of interest must have positive width and height',
+                        message: i18n.t('models::Region of interest must have positive width and height'),
                     });
                 } else {
                     updateInput(clamped);
@@ -204,8 +207,8 @@ function RegionOfInterestInputComponent(props: Props): JSX.Element {
     return (
         <div className='cvat-automatic-annotation-region-of-interest-container'>
             <div>
-                <Text>Region of interest</Text>
-                <CVATTooltip title='Defines area of the image where the model will be applied'>
+                <Text>{t('Region of interest')}</Text>
+                <CVATTooltip title={t('Defines area of the image where the model will be applied')}>
                     <QuestionCircleOutlined className='cvat-info-circle-icon' />
                 </CVATTooltip>
             </div>
@@ -260,13 +263,13 @@ function RegionOfInterestInputComponent(props: Props): JSX.Element {
                 </Col>
                 {canvasInstance && (
                     <Col>
-                        <CVATTooltip title='Draw a region of interest'>
+                        <CVATTooltip title={t('Draw a region of interest')}>
                             <Button icon={<Icon component={RectangleIcon} />} onClick={startDrawing} />
                         </CVATTooltip>
                     </Col>
                 )}
                 <Col>
-                    <Button type='link' onClick={() => updateInput(null)}>Clear</Button>
+                    <Button type='link' onClick={() => updateInput(null)}>{t('Clear')}</Button>
                 </Col>
             </Row>
         </div>

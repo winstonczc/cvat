@@ -5,6 +5,7 @@
 
 import './styles.scss';
 import React from 'react';
+import i18n from 'i18next';
 import Tabs from 'antd/lib/tabs';
 import Text from 'antd/lib/typography/Text';
 import modal from 'antd/lib/modal';
@@ -172,8 +173,8 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
             modal.confirm({
                 className: 'cvat-modal-delete-label',
                 icon: <ExclamationCircleOutlined />,
-                title: `Do you want to delete "${label.name}" label?`,
-                content: 'This action cannot be undone. All annotations associated to the label will be deleted.',
+                title: i18n.t('labels::Do you want to delete "{{name}}" label?', { name: label.name }),
+                content: i18n.t('labels::This action cannot be undone. All annotations associated to the label will be deleted.'),
                 type: 'warning',
                 okButtonProps: { type: 'primary', danger: true },
                 onOk: deleteLabel,
@@ -340,7 +341,7 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
                     label: (
                         <span>
                             <EditOutlined />
-                            <Text>Raw</Text>
+                            <Text>{i18n.t('labels::Raw')}</Text>
                         </span>
                     ),
                     children: (
@@ -356,7 +357,7 @@ export default class LabelsEditor extends React.PureComponent<LabelsEditorProps,
                     label: (
                         <span>
                             <BuildOutlined />
-                            <Text>Constructor</Text>
+                            <Text>{i18n.t('labels::Constructor')}</Text>
                         </span>
                     ),
                     children: configuratorContent,

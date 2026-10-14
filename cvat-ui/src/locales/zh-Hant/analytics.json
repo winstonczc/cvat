@@ -1,0 +1,8 @@
+{
+    "Analytics for ": "分析：",
+    "UTC start date": "UTC 開始日期",
+    "UTC end date": "UTC 結束日期",
+    "Export events": "匯出事件",
+    "Could not export events for the target resource": "無法匯出目標資源的事件",
+    "Could not receive the target resource from the server": "無法從伺服器獲取目標資源"
+}

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import Icon from '@ant-design/icons';
 
 import { CursorIcon } from 'icons';
@@ -42,6 +43,7 @@ function CursorControl(props: Props): JSX.Element {
     } = props;
 
     const dispatch = useDispatch<ThunkDispatch>();
+    const { t } = useTranslation('annotation');
     const { keyMap } = useSelector((state: CombinedState) => state.shortcuts);
     const selectedStatesID = useSelector(
         (state: CombinedState) => state.annotation.annotations.selectedStatesID,
@@ -74,7 +76,7 @@ function CursorControl(props: Props): JSX.Element {
                 keyMap={subKeyMap(componentShortcuts, keyMap)}
                 handlers={handlers}
             />
-            <CVATTooltip title={`Cursor ${cursorShortkey}`} placement='right'>
+            <CVATTooltip title={`${t('Cursor')} ${cursorShortkey}`} placement='right'>
                 <Icon
                     component={CursorIcon}
                     className={

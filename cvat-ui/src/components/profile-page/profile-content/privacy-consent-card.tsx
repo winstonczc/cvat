@@ -4,6 +4,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import Card from 'antd/lib/card';
 import Button from 'antd/lib/button';
 import Switch from 'antd/lib/switch';
@@ -12,6 +13,7 @@ import { updateGrowthDataAsync } from 'actions/growth-actions';
 import { CombinedState } from 'reducers';
 
 function PrivacyConsentCard(): JSX.Element {
+    const { t } = useTranslation('profile');
     const dispatch = useDispatch();
     const { data, fetching } = useSelector((state: CombinedState) => state.growth);
     const [promotionNotificationsAllowed, setPromotionNotificationsAllowed] = useState(false);
@@ -23,7 +25,7 @@ function PrivacyConsentCard(): JSX.Element {
     const isChanged = !!data && promotionNotificationsAllowed !== data.promotionNotificationsAllowed;
 
     return (
-        <Card title='Privacy & consent' className='cvat-profile-privacy-consent-card'>
+        <Card title={t('Privacy & consent')} className='cvat-profile-privacy-consent-card'>
             <div className='cvat-profile-privacy-consent-item'>
                 <Switch
                     checked={promotionNotificationsAllowed}
@@ -32,9 +34,9 @@ function PrivacyConsentCard(): JSX.Element {
                     onChange={setPromotionNotificationsAllowed}
                 />
                 <div className='cvat-profile-privacy-consent-item-copy'>
-                    <div className='cvat-profile-privacy-consent-item-title'>Allow promotional notifications</div>
+                    <div className='cvat-profile-privacy-consent-item-title'>{t('Allow promotional notifications')}</div>
                     <div className='cvat-profile-privacy-consent-item-description'>
-                        Occasional product and community updates from CVAT.
+                        {t('Occasional product and community updates from CVAT.')}
                     </div>
                 </div>
             </div>
@@ -45,7 +47,7 @@ function PrivacyConsentCard(): JSX.Element {
                     loading={fetching}
                     onClick={() => dispatch(updateGrowthDataAsync({ promotionNotificationsAllowed }))}
                 >
-                    Save changes
+                    {t('Save changes')}
                 </Button>
             </div>
         </Card>

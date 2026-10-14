@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { PictureOutlined } from '@ant-design/icons';
@@ -43,6 +44,7 @@ export default function Preview(props: Readonly<Props>): JSX.Element {
 
     const [hasFetched, setHasFetched] = React.useState(false);
     const { ref, inView } = useInView({ triggerOnce: true });
+    const { t } = useTranslation('common');
 
     const { preview, entity } = useSelector((state: CombinedState) => {
         if (job !== undefined) {
@@ -113,7 +115,7 @@ export default function Preview(props: Readonly<Props>): JSX.Element {
                 className={previewClassName || ''}
                 src={imgSrc}
                 onClick={onClick}
-                alt='Preview image'
+                alt={t('Preview image')}
                 aria-hidden
             />
         </div>

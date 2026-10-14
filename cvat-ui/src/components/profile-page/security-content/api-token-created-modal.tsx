@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 
 import Modal from 'antd/lib/modal';
 import Input from 'antd/lib/input';
@@ -23,6 +24,7 @@ interface Props {
 function ApiTokenCreatedModal({
     visible, token, onClose,
 }: Props): JSX.Element {
+    const { t } = useTranslation('profile');
     const [copied, setCopied] = useState(false);
     const { value: tokenValue } = token;
 
@@ -38,7 +40,7 @@ function ApiTokenCreatedModal({
 
     return (
         <Modal
-            title='Your token is ready'
+            title={t('Your token is ready')}
             open={visible}
             onCancel={onClose}
             footer={[
@@ -49,9 +51,14 @@ function ApiTokenCreatedModal({
                     style={{ background: '#faad14' }}
                     className='cvat-api-token-created-modal-confirm-saved-button'
                 >
-                    I have&nbsp;
-                    <strong>securely</strong>
-                    &nbsp;saved my token
+                    <Trans
+                        ns='profile'
+                        i18nKey='I have <strong>securely</strong> saved my token'
+                    >
+                        I have
+                        <strong>securely</strong>
+                        saved my token
+                    </Trans>
                 </Button>,
             ]}
             width={500}
@@ -61,9 +68,9 @@ function ApiTokenCreatedModal({
             <Space direction='vertical' size='large' style={{ width: '100%' }}>
                 <div className='cvat-api-token-created-modal-content'>
                     <Typography.Text type='secondary'>
-                        Make sure to copy your new personal access token now.
+                        {t('Make sure to copy your new personal access token now.')}
                         <br />
-                        You won&apos;t be able to see it again!
+                        {t("You won't be able to see it again!")}
                     </Typography.Text>
                     <Space.Compact style={{ width: '100%' }}>
                         <Input
@@ -78,7 +85,7 @@ function ApiTokenCreatedModal({
                             onClick={handleCopyToClipboard}
                             className='cvat-api-token-copy-button'
                         >
-                            {copied ? 'Copied!' : 'Copy'}
+                            {copied ? t('Copied!') : t('Copy')}
                         </Button>
                     </Space.Compact>
                 </div>

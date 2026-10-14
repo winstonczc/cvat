@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactDOM from 'react-dom';
 import { debounce } from 'lodash';
 import { Row, Col } from 'antd/lib/grid';
@@ -32,6 +33,7 @@ function PolySimplifyControl(props: Props): React.ReactPortal | null {
     const {
         objectState, approxPolyAccuracy, repeatDrawShapeShortcut, onChangeAccuracy, onApply, onCancel, onUpdatePreview,
     } = props;
+    const { t } = useTranslation('annotation');
 
     const originalPointsRef = useRef<number[]>(objectState.points ? [...objectState.points] : []);
     const isMounted = useIsMounted();
@@ -58,7 +60,7 @@ function PolySimplifyControl(props: Props): React.ReactPortal | null {
 
     const ensureInitialized = useCallback(async (): Promise<void> => {
         if (!openCVWrapper.isInitialized) {
-            const hide = message.loading('Initializing contour utilities..', 0);
+            const hide = message.loading(t('Initializing contour utilities..'), 0);
             try {
                 await openCVWrapper.initialize(() => {
                     hide();
@@ -166,8 +168,8 @@ function PolySimplifyControl(props: Props): React.ReactPortal | null {
                     onClick={handleCancel}
                 />
             </Col>
-            <CVATTooltip title='Lower values create simpler shapes with fewer points. Higher values preserve more detail and points.'>
-                <Text type='secondary'>threshold</Text>
+            <CVATTooltip title={t('Lower values create simpler shapes with fewer points. Higher values preserve more detail and points.')}>
+                <Text type='secondary'>{t('threshold')}</Text>
             </CVATTooltip>
         </Row>,
         target,

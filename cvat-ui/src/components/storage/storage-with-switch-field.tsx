@@ -4,6 +4,7 @@
 
 import './styles.scss';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Form from 'antd/lib/form';
 import Text from 'antd/lib/typography/Text';
 import Space from 'antd/lib/space';
@@ -46,6 +47,7 @@ export default function StorageWithSwitchField(props: Readonly<Props>): JSX.Elem
         onChangeLocationValue,
         disableSwitch,
     } = props;
+    const { t } = useTranslation('common');
 
     return (
         <>
@@ -64,9 +66,9 @@ export default function StorageWithSwitchField(props: Readonly<Props>): JSX.Elem
                             }}
                         />
                     </Form.Item>
-                    <Text strong>{switchDescription}</Text>
+                    <Text strong>{switchDescription ? t(switchDescription) : null}</Text>
                     {switchHelpMessage ? (
-                        <Tooltip title={switchHelpMessage}>
+                        <Tooltip title={t(switchHelpMessage)}>
                             <QuestionCircleOutlined />
                         </Tooltip>
                     ) : null}
@@ -76,8 +78,8 @@ export default function StorageWithSwitchField(props: Readonly<Props>): JSX.Elem
                 <Form.Item
                     label={(
                         <Space>
-                            {storageLabel}
-                            <CVATTooltip title={storageDescription}>
+                            {t(storageLabel)}
+                            <CVATTooltip title={storageDescription ? t(storageDescription) : null}>
                                 <QuestionCircleOutlined style={{ opacity: 0.5 }} />
                             </CVATTooltip>
                         </Space>

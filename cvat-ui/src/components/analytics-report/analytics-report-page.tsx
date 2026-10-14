@@ -6,6 +6,7 @@ import './styles.scss';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import i18n from 'i18next';
 import notification from 'antd/lib/notification';
 import { Row, Col } from 'antd/lib/grid';
 
@@ -89,7 +90,7 @@ function AnalyticsReportPage(): JSX.Element {
             }
         } catch (error: unknown) {
             notification.error({
-                message: 'Could not export events for the target resource',
+                message: i18n.t('analytics::Could not export events for the target resource'),
                 description: error instanceof Error ? error.message : '',
             });
         } finally {
@@ -122,7 +123,7 @@ function AnalyticsReportPage(): JSX.Element {
                 setResource(_resource[0]);
             }).catch((error: unknown) => {
                 notification.error({
-                    message: 'Could not receive the target resource from the server',
+                    message: i18n.t('analytics::Could not receive the target resource from the server'),
                     description: error instanceof Error ? error.message : '',
                 });
             }).finally(() => {

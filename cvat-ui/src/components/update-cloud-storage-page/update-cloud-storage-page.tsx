@@ -5,6 +5,7 @@
 import './styles.scss';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import { useParams } from 'react-router-dom';
 import { Row, Col } from 'antd/lib/grid';
@@ -22,6 +23,7 @@ interface ParamType {
 
 export default function UpdateCloudStoragePageComponent(): JSX.Element {
     const dispatch = useDispatch();
+    const { t } = useTranslation('cloud-storages');
     const cloudStorageId = +useParams<ParamType>().id;
     const [requested, setRequested] = useState(false);
     const {
@@ -52,7 +54,7 @@ export default function UpdateCloudStoragePageComponent(): JSX.Element {
     return (
         <Row justify='center' align='top' className='cvat-update-cloud-storage-form-wrapper'>
             <Col md={20} lg={16} xl={14} xxl={9}>
-                <Text className='cvat-title'>{`Update cloud storage #${cloudStorageId}`}</Text>
+                <Text className='cvat-title'>{t('Update cloud storage #{{id}}', { id: cloudStorageId })}</Text>
                 <CreateCloudStorageForm cloudStorage={cloudStorage} />
             </Col>
         </Row>

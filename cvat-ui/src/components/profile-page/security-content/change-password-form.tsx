@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Form from 'antd/lib/form';
 import { LockOutlined } from '@ant-design/icons';
@@ -19,6 +20,7 @@ interface Props {
 }
 
 function ChangePasswordFormComponent({ onSubmit, onCancel }: Props): JSX.Element {
+    const { t } = useTranslation('profile');
     return (
         <Form onFinish={onSubmit} className='cvat-change-password-form'>
             <Form.Item
@@ -27,14 +29,14 @@ function ChangePasswordFormComponent({ onSubmit, onCancel }: Props): JSX.Element
                 rules={[
                     {
                         required: true,
-                        message: 'Please input your current password!',
+                        message: t('Please input your current password!'),
                     },
                 ]}
             >
                 <Input.Password
                     autoComplete='current-password'
                     prefix={<LockOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />}
-                    placeholder='Current password'
+                    placeholder={t('Current password')}
                 />
             </Form.Item>
 
@@ -44,7 +46,7 @@ function ChangePasswordFormComponent({ onSubmit, onCancel }: Props): JSX.Element
                 rules={[
                     {
                         required: true,
-                        message: 'Please input new password!',
+                        message: t('common::Please input new password!'),
                     },
                     validatePassword,
                 ]}
@@ -52,7 +54,7 @@ function ChangePasswordFormComponent({ onSubmit, onCancel }: Props): JSX.Element
                 <Input.Password
                     autoComplete='new-password'
                     prefix={<LockOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />}
-                    placeholder='New password'
+                    placeholder={t('common::New password')}
                 />
             </Form.Item>
 
@@ -63,7 +65,7 @@ function ChangePasswordFormComponent({ onSubmit, onCancel }: Props): JSX.Element
                 rules={[
                     {
                         required: true,
-                        message: 'Please confirm your new password!',
+                        message: t('common::Please confirm your new password!'),
                     },
                     validateConfirmation('newPassword1'),
                 ]}
@@ -71,7 +73,7 @@ function ChangePasswordFormComponent({ onSubmit, onCancel }: Props): JSX.Element
                 <Input.Password
                     autoComplete='new-password'
                     prefix={<LockOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />}
-                    placeholder='Confirm new password'
+                    placeholder={t('common::Confirm new password')}
                 />
             </Form.Item>
 
@@ -81,14 +83,14 @@ function ChangePasswordFormComponent({ onSubmit, onCancel }: Props): JSX.Element
                         className='cvat-change-password-cancel-button'
                         onClick={onCancel}
                     >
-                        Cancel
+                        {t('Cancel')}
                     </Button>
                     <Button
                         type='primary'
                         htmlType='submit'
                         className='cvat-change-password-form-button'
                     >
-                        Submit
+                        {t('Submit')}
                     </Button>
                 </Row>
             </Form.Item>

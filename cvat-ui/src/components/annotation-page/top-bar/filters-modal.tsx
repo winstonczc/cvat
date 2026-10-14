@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import {
     Builder,
@@ -142,6 +143,7 @@ function FiltersModalComponent(): JSX.Element {
         }),
         shallowEqual,
     );
+    const { t, i18n } = useTranslation('annotation');
     const [config, setConfig] = useState<Config>(AntdConfig);
     const [keypointConfig, setKeypointConfig] = useState<Config>(AntdConfig);
 
@@ -157,7 +159,7 @@ function FiltersModalComponent(): JSX.Element {
             ...AntdConfig,
             fields: {
                 label: {
-                    label: 'Label',
+                    label: t('Label'),
                     type: 'select',
                     valueSources: ['value'] as 'value'[],
                     fieldSettings: {
@@ -168,61 +170,61 @@ function FiltersModalComponent(): JSX.Element {
                     },
                 },
                 type: {
-                    label: 'Type',
+                    label: t('Type'),
                     type: 'select',
                     fieldSettings: {
                         listValues: [
-                            { value: 'shape', title: 'Shape' },
-                            { value: 'track', title: 'Track' },
-                            { value: 'tag', title: 'Tag' },
+                            { value: 'shape', title: t('Shape') },
+                            { value: 'track', title: t('Track') },
+                            { value: 'tag', title: t('Tag') },
                         ],
                     },
                 },
                 shape: {
-                    label: 'Shape',
+                    label: t('Shape'),
                     type: 'select',
                     fieldSettings: {
                         listValues: [
-                            { value: 'rectangle', title: 'Rectangle' },
-                            { value: 'points', title: 'Points' },
-                            { value: 'polyline', title: 'Polyline' },
-                            { value: 'polygon', title: 'Polygon' },
-                            { value: 'cuboid', title: 'Cuboid' },
-                            { value: 'ellipse', title: 'Ellipse' },
-                            { value: 'skeleton', title: 'Skeleton' },
-                            { value: 'mask', title: 'Mask' },
+                            { value: 'rectangle', title: t('Rectangle') },
+                            { value: 'points', title: t('Points') },
+                            { value: 'polyline', title: t('Polyline') },
+                            { value: 'polygon', title: t('Polygon') },
+                            { value: 'cuboid', title: t('Cuboid') },
+                            { value: 'ellipse', title: t('Ellipse') },
+                            { value: 'skeleton', title: t('Skeleton') },
+                            { value: 'mask', title: t('Mask') },
                         ],
                     },
                 },
                 occluded: {
-                    label: 'Occluded',
+                    label: t('Occluded'),
                     type: 'boolean',
                 },
                 source: {
-                    label: 'Source',
+                    label: t('Source'),
                     type: 'select',
                     fieldSettings: {
                         listValues: [
-                            { value: 'auto', title: 'Auto' },
-                            { value: 'semi-auto', title: 'Semi-auto' },
-                            { value: 'manual', title: 'Manual' },
-                            { value: 'file', title: 'File' },
-                            { value: 'consensus', title: 'Consensus' },
+                            { value: 'auto', title: t('Auto') },
+                            { value: 'semi-auto', title: t('Semi-auto') },
+                            { value: 'manual', title: t('Manual') },
+                            { value: 'file', title: t('File') },
+                            { value: 'consensus', title: t('Consensus') },
                         ],
                     },
                 },
                 width: {
-                    label: 'Width',
+                    label: t('Width'),
                     type: 'number',
                     fieldSettings: { min: 0 },
                 },
                 height: {
-                    label: 'Height',
+                    label: t('Height'),
                     type: 'number',
                     fieldSettings: { min: 0 },
                 },
                 rotation: {
-                    label: 'Rotation',
+                    label: t('Rotation'),
                     type: 'number',
                     fieldSettings: { min: 0 },
                 },
@@ -239,21 +241,21 @@ function FiltersModalComponent(): JSX.Element {
                     fieldSettings: { min: 0 },
                 },
                 score: {
-                    label: 'Score',
+                    label: t('Score'),
                     type: 'number',
                     fieldSettings: { min: 0, max: 1 },
                 },
                 votes: {
-                    label: 'Votes',
+                    label: t('Votes'),
                     type: 'number',
                     fieldSettings: { min: 0 },
                 },
                 zOrder: {
-                    label: 'Z order',
+                    label: t('Z order'),
                     type: 'number',
                 },
                 attr: {
-                    label: 'Attributes',
+                    label: t('Attributes'),
                     type: '!struct',
                     subfields: getAttributesSubfields(labels),
                     fieldSettings: {
@@ -274,7 +276,7 @@ function FiltersModalComponent(): JSX.Element {
             ...AntdConfig,
             fields: {
                 label: {
-                    label: 'Label',
+                    label: t('Label'),
                     type: 'select',
                     operators: ['select_equals', 'select_any_in'],
                     valueSources: ['value'] as 'value'[],
@@ -283,12 +285,12 @@ function FiltersModalComponent(): JSX.Element {
                     },
                 },
                 occluded: {
-                    label: 'Occluded',
+                    label: t('Occluded'),
                     type: 'boolean',
                 },
                 ...(Object.keys(keypointAttributesSubfields).length ? {
                     attr: {
-                        label: 'Attributes',
+                        label: t('Attributes'),
                         type: '!struct',
                         subfields: keypointAttributesSubfields,
                         fieldSettings: {
@@ -313,7 +315,8 @@ function FiltersModalComponent(): JSX.Element {
         } catch (_) {
             setFilters([]);
         }
-    }, []);
+        // i18n.language: re-run on language change so stored filters are re-translated
+    }, [i18n.language]);
 
     useEffect(() => {
         window.localStorage.setItem(FILTERS_HISTORY, JSON.stringify(filters));
@@ -423,7 +426,7 @@ function FiltersModalComponent(): JSX.Element {
                         QbUtils.queryString(keypointTree, keypointConfig) : '';
                     const queryString = [
                         objectQueryString,
-                        keypointQueryString ? `Elements: ${keypointQueryString}` : '',
+                        keypointQueryString ? t('Elements: {{query}}', { query: keypointQueryString }) : '',
                     ].filter((item) => !!item).join(' | ');
 
                     return {
@@ -460,14 +463,14 @@ function FiltersModalComponent(): JSX.Element {
                     onClick={() => applyFilters([])}
                     className='cvat-filters-modal-clear-button'
                 >
-                    Clear filters
+                    {t('Clear filters')}
                 </Button>,
                 <Button
                     key='cancel'
                     onClick={() => dispatch(showFilters(false))}
                     className='cvat-filters-modal-cancel-button'
                 >
-                    Cancel
+                    {t('common::Cancel')}
                 </Button>,
                 <Button
                     key='submit'
@@ -476,7 +479,7 @@ function FiltersModalComponent(): JSX.Element {
                     onClick={confirmModal}
                     className='cvat-filters-modal-submit-button'
                 >
-                    Submit
+                    {t('Submit')}
                 </Button>,
             ]}
         >
@@ -494,7 +497,7 @@ function FiltersModalComponent(): JSX.Element {
                     content={menu}
                 >
                     <Button type='text' className='cvat-filters-modal-recently-used-button'>
-                        Recently used
+                        {t('Recently used')}
                         {' '}
                         <DownOutlined />
                     </Button>
@@ -502,7 +505,7 @@ function FiltersModalComponent(): JSX.Element {
             </div>
             {!!config.fields && (
                 <>
-                    <Typography.Text strong>Objects</Typography.Text>
+                    <Typography.Text strong>{t('Objects')}</Typography.Text>
                     <Query
                         {...config}
                         value={immutableTree as ImmutableTree}
@@ -513,7 +516,7 @@ function FiltersModalComponent(): JSX.Element {
             )}
             {!!keypointConfig.fields && (
                 <>
-                    <Typography.Text strong>Elements</Typography.Text>
+                    <Typography.Text strong>{t('Elements')}</Typography.Text>
                     <Query
                         {...keypointConfig}
                         value={keypointImmutableTree as ImmutableTree}

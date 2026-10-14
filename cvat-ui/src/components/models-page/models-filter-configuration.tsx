@@ -3,58 +3,61 @@
 // SPDX-License-Identifier: MIT
 
 import { Config } from '@react-awesome-query-builder/antd';
+import i18n from 'i18next';
 import asyncFetchUsers from 'components/resource-sorting-filtering/request-users';
 
-export const config: Partial<Config> = {
-    fields: {
-        description: {
-            label: 'Description',
-            type: 'text',
-            valueSources: ['value'],
-            operators: ['like'],
-        },
-        target_url: {
-            label: 'Target URL',
-            type: 'text',
-            valueSources: ['value'],
-            operators: ['like'],
-        },
-        owner: {
-            label: 'Owner',
-            type: 'select',
-            valueSources: ['value'],
-            operators: ['select_equals'],
-            fieldSettings: {
-                useAsyncSearch: true,
-                forceAsyncSearch: true,
-                asyncFetch: asyncFetchUsers,
+export function getModelsFilterConfig(): Partial<Config> {
+    return {
+        fields: {
+            description: {
+                label: i18n.t('models::Description'),
+                type: 'text',
+                valueSources: ['value'],
+                operators: ['like'],
+            },
+            target_url: {
+                label: i18n.t('models::Target URL'),
+                type: 'text',
+                valueSources: ['value'],
+                operators: ['like'],
+            },
+            owner: {
+                label: i18n.t('models::Owner'),
+                type: 'select',
+                valueSources: ['value'],
+                operators: ['select_equals'],
+                fieldSettings: {
+                    useAsyncSearch: true,
+                    forceAsyncSearch: true,
+                    asyncFetch: asyncFetchUsers,
+                },
+            },
+            updated_date: {
+                label: i18n.t('models::Last updated'),
+                type: 'datetime',
+                operators: ['between', 'greater', 'greater_or_equal', 'less', 'less_or_equal'],
+            },
+            type: {
+                label: i18n.t('models::Type'),
+                type: 'select',
+                valueSources: ['value'],
+                fieldSettings: {
+                    listValues: [
+                        { value: 'organization', title: i18n.t('models::Organization') },
+                        { value: 'project', title: i18n.t('models::Project') },
+                    ],
+                },
+            },
+            id: {
+                label: i18n.t('models::ID'),
+                type: 'number',
+                operators: ['equal', 'between', 'greater', 'greater_or_equal', 'less', 'less_or_equal'],
+                fieldSettings: { min: 0 },
+                valueSources: ['value'],
             },
         },
-        updated_date: {
-            label: 'Last updated',
-            type: 'datetime',
-            operators: ['between', 'greater', 'greater_or_equal', 'less', 'less_or_equal'],
-        },
-        type: {
-            label: 'Type',
-            type: 'select',
-            valueSources: ['value'],
-            fieldSettings: {
-                listValues: [
-                    { value: 'organization', title: 'Organization' },
-                    { value: 'project', title: 'Project' },
-                ],
-            },
-        },
-        id: {
-            label: 'ID',
-            type: 'number',
-            operators: ['equal', 'between', 'greater', 'greater_or_equal', 'less', 'less_or_equal'],
-            fieldSettings: { min: 0 },
-            valueSources: ['value'],
-        },
-    },
-};
+    };
+}
 
 export const localStorageRecentCapacity = 10;
 export const localStorageRecentKeyword = 'recentlyAppliedWebhooksFilters';

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import { LeftOutlined, MoreOutlined } from '@ant-design/icons';
 import Button from 'antd/lib/button';
@@ -22,6 +23,7 @@ export default function ProjectTopBar(props: DetailsComponentProps): JSX.Element
     const { projectInstance, onUpdateProject } = props;
 
     const history = useHistory();
+    const { t } = useTranslation('projects');
 
     return (
         <Row className='cvat-task-top-bar' justify='space-between' align='middle'>
@@ -33,7 +35,7 @@ export default function ProjectTopBar(props: DetailsComponentProps): JSX.Element
                     size='large'
                 >
                     <LeftOutlined />
-                    Back to projects
+                    {t('Back to projects')}
                 </Button>
             </Col>
             <Col className='cvat-project-top-bar-actions'>
@@ -42,7 +44,7 @@ export default function ProjectTopBar(props: DetailsComponentProps): JSX.Element
                     onUpdateProject={onUpdateProject}
                     triggerElement={(
                         <Button size='middle' className='cvat-project-page-actions-button'>
-                            <Text className='cvat-text-color'>Actions</Text>
+                            <Text className='cvat-text-color'>{t('Actions')}</Text>
                             <MoreOutlined className='cvat-menu-icon' />
                         </Button>
                     )}

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ProjectsQuery } from 'reducers';
 import { CSVColumn } from 'utils/csv-writer';
 import { getCore, Project } from 'cvat-core-wrapper';
@@ -36,19 +38,27 @@ const columns: CSVColumn<Project>[] = [
     { header: 'Bug Tracker', accessor: (project) => project.bugTracker ?? '' },
 ];
 
-const ProjectsCSVExportButton = createCSVExportButton<Project, ProjectsQuery>({
-    resourceName: 'projects',
-    className: 'cvat-projects-export-csv-button',
-    tooltipTitle: 'Export projects to CSV',
-    columns,
-    uniqueKey: 'id',
-    fetchPage: async (query) => {
-        const projects = await cvat.projects.get(query);
-        return {
-            results: projects,
-            count: projects.count,
-        };
-    },
-});
+interface Props {
+    query: ProjectsQuery;
+}
 
-export default ProjectsCSVExportButton;
+export default function ProjectsCSVExportButton(props: Props): JSX.Element {
+    const { query } = props;
+    const { t, i18n } = useTranslation('projects');
+    const ExportButton = useMemo(() => createCSVExportButton<Project, ProjectsQuery>({
+        resourceName: 'projects',
+        className: 'cvat-projects-export-csv-button',
+        tooltipTitle: t('Export projects to CSV'),
+        columns,
+        uniqueKey: 'id',
+        fetchPage: async (fetchQuery) => {
+            const projects = await cvat.projects.get(fetchQuery);
+            return {
+                results: projects,
+                count: projects.count,
+            };
+        },
+    }), [i18n.language]);
+
+    return <ExportButton query={query} />;
+}

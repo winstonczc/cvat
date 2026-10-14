@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import i18n from 'i18next';
 import { connect } from 'react-redux';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import message from 'antd/lib/message';
@@ -141,13 +142,13 @@ class DrawShapePopoverContainer extends React.PureComponent<Props, State> {
             return true;
         }
 
-        const hide = message.loading('Initializing OpenCV for rotated shape drawing...', 0);
+        const hide = message.loading(i18n.t('annotation::Initializing OpenCV for rotated shape drawing...'), 0);
         try {
             await openCVWrapper.initialize(() => {});
             return true;
         } catch (error: any) {
             notification.error({
-                message: 'Could not initialize OpenCV',
+                message: i18n.t('annotation::Could not initialize OpenCV'),
                 description: error.toString(),
             });
             return false;

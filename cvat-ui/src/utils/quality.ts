@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
 import { Project, QualitySettings, Task } from 'cvat-core-wrapper';
 
 export function sorter(path: string) {
@@ -56,9 +57,9 @@ export function tablePaginationPageSize(pageHeight: number): number {
 export function validationModeText(task: Task): string | null {
     let result: string | null = null;
     if (task.validationMode === 'gt') {
-        result = 'Ground truth';
+        result = i18n.t('quality::Ground truth');
     } else if (task.validationMode === 'gt_pool') {
-        result = 'Honeypots';
+        result = i18n.t('quality::Honeypots');
     }
     return result;
 }

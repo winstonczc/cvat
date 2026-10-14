@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import Select from 'antd/lib/select';
 import Tag from 'antd/lib/tag';
@@ -29,6 +30,7 @@ interface Props {
 }
 
 function ObjectMapperComponent(props: Props): JSX.Element {
+    const { t } = useTranslation('models');
     const {
         leftData, rightData, defaultMapping, allowManyToOne,
         rowClassName, containerClassName, deleteMappingLabel, infoMappingLabel,
@@ -86,7 +88,7 @@ function ObjectMapperComponent(props: Props): JSX.Element {
                                 <Tag style={{ color: textColor }} color={color} key={rightName}>{rightName}</Tag>
                             </Col>
                             <Col span={2} offset={1}>
-                                <CVATTooltip title={deleteMappingLabel}>
+                                <CVATTooltip title={t(deleteMappingLabel)}>
                                     <DeleteOutlined
                                         className='cvat-danger-circle-icon'
                                         onClick={() => setMappingWrapper(
@@ -148,11 +150,11 @@ function ObjectMapperComponent(props: Props): JSX.Element {
                     </Col>
                     <Col span={2} offset={1}>
                         { (leftValue === null && rightValue === null) ? (
-                            <CVATTooltip title={infoMappingLabel}>
+                            <CVATTooltip title={t(infoMappingLabel)}>
                                 <QuestionCircleOutlined className='cvat-info-circle-icon' />
                             </CVATTooltip>
                         ) : (
-                            <CVATTooltip title={deleteMappingLabel}>
+                            <CVATTooltip title={t(deleteMappingLabel)}>
                                 <DeleteOutlined
                                     className='cvat-danger-circle-icon'
                                     onClick={() => {

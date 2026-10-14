@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { RefObject } from 'react';
+import i18n from 'i18next';
 import { Row, Col } from 'antd/lib/grid';
 import Icon, { DeleteOutlined, PlusCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import Input from 'antd/lib/input';
@@ -160,7 +161,7 @@ export default class LabelForm extends React.Component<Props> {
                 rules={[
                     {
                         required: true,
-                        message: 'Please specify a name',
+                        message: i18n.t('labels::Please specify a name'),
                     },
                     {
                         pattern: patterns.validateAttributeName.pattern,
@@ -169,14 +170,14 @@ export default class LabelForm extends React.Component<Props> {
                     {
                         validator: (_rule: any, attrName: string) => {
                             if (attrNames.includes(attrName) && attr.name !== attrName) {
-                                return Promise.reject(new Error('Attribute name must be unique for the label'));
+                                return Promise.reject(new Error(i18n.t('labels::Attribute name must be unique for the label')));
                             }
                             return Promise.resolve();
                         },
                     },
                 ]}
             >
-                <Input className='cvat-attribute-name-input' placeholder='Name' />
+                <Input className='cvat-attribute-name-input' placeholder={i18n.t('labels::Name')} />
             </Form.Item>
         );
     }
@@ -186,7 +187,7 @@ export default class LabelForm extends React.Component<Props> {
         const locked = attr.id as number >= 0;
 
         return (
-            <CVATTooltip title='An HTML element representing the attribute'>
+            <CVATTooltip title={i18n.t('labels::An HTML element representing the attribute')}>
                 <Form.Item name={[key, 'type']}>
                     <Select
                         className='cvat-attribute-type-input'
@@ -206,19 +207,19 @@ export default class LabelForm extends React.Component<Props> {
                         }}
                     >
                         <Select.Option value={AttributeType.SELECT} className='cvat-attribute-type-input-select'>
-                            Select
+                            {i18n.t('labels::Select')}
                         </Select.Option>
                         <Select.Option value={AttributeType.RADIO} className='cvat-attribute-type-input-radio'>
-                            Radio
+                            {i18n.t('labels::Radio')}
                         </Select.Option>
                         <Select.Option value={AttributeType.CHECKBOX} className='cvat-attribute-type-input-checkbox'>
-                            Checkbox
+                            {i18n.t('labels::Checkbox')}
                         </Select.Option>
                         <Select.Option value={AttributeType.TEXT} className='cvat-attribute-type-input-text'>
-                            Text
+                            {i18n.t('labels::Text')}
                         </Select.Option>
                         <Select.Option value={AttributeType.NUMBER} className='cvat-attribute-type-input-number'>
-                            Number
+                            {i18n.t('labels::Number')}
                         </Select.Option>
                     </Select>
                 </Form.Item>
@@ -234,13 +235,13 @@ export default class LabelForm extends React.Component<Props> {
         const validator = (_: any, values: string[]): Promise<void> => {
             if (locked && existingValues) {
                 if (!equalArrayHead(existingValues, values)) {
-                    return Promise.reject(new Error('You can only append new values'));
+                    return Promise.reject(new Error(i18n.t('labels::You can only append new values')));
                 }
             }
 
             for (const value of values) {
                 if (!patterns.validateAttributeValue.pattern.test(value)) {
-                    return Promise.reject(new Error(`Invalid attribute value: "${value}"`));
+                    return Promise.reject(new Error(i18n.t('labels::Invalid attribute value: "{{value}}"', { value })));
                 }
             }
 
@@ -248,13 +249,13 @@ export default class LabelForm extends React.Component<Props> {
         };
 
         return (
-            <CVATTooltip title='Press enter to add a new value'>
+            <CVATTooltip title={i18n.t('labels::Press enter to add a new value')}>
                 <Form.Item
                     name={[key, 'values']}
                     rules={[
                         {
                             required: true,
-                            message: 'Please specify values',
+                            message: i18n.t('labels::Please specify values'),
                         },
                         {
                             validator,
@@ -264,7 +265,7 @@ export default class LabelForm extends React.Component<Props> {
                     <Select
                         className='cvat-attribute-values-input'
                         mode='tags'
-                        placeholder='Attribute values'
+                        placeholder={i18n.t('labels::Attribute values')}
                         dropdownStyle={{ display: 'none' }}
                         tagRender={(props) => {
                             const attrs = this.formRef.current?.getFieldValue('attributes');
@@ -272,7 +273,7 @@ export default class LabelForm extends React.Component<Props> {
                             return (
                                 <CVATTooltip
                                     placement='bottom'
-                                    title={isDefault ? 'This value is default' : 'Click to set default value'}
+                                    title={isDefault ? i18n.t('labels::This value is default') : i18n.t('labels::Click to set default value')}
                                 >
                                     <Tag
                                         visible
@@ -312,12 +313,12 @@ export default class LabelForm extends React.Component<Props> {
         const { key } = fieldInstance;
 
         return (
-            <CVATTooltip title='Specify a default value'>
+            <CVATTooltip title={i18n.t('labels::Specify a default value')}>
                 <Form.Item
                     rules={[
                         {
                             required: true,
-                            message: 'Please, specify a default value',
+                            message: i18n.t('labels::Please, specify a default value'),
                         }]}
                     name={[key, 'values']}
                 >
@@ -352,7 +353,7 @@ export default class LabelForm extends React.Component<Props> {
                 rules={[
                     {
                         required: true,
-                        message: 'Please set a range',
+                        message: i18n.t('labels::Please set a range'),
                     },
                     {
                         validator,
@@ -369,7 +370,7 @@ export default class LabelForm extends React.Component<Props> {
 
         return (
             <Form.Item name={[key, 'values']}>
-                <Input.TextArea className='cvat-attribute-values-input' placeholder='Default value' />
+                <Input.TextArea className='cvat-attribute-values-input' placeholder={i18n.t('labels::Default value')} />
             </Form.Item>
         );
     }
@@ -379,13 +380,13 @@ export default class LabelForm extends React.Component<Props> {
         const locked = attr.id as number >= 0;
 
         return (
-            <CVATTooltip title='Can this attribute be changed frame to frame?'>
+            <CVATTooltip title={i18n.t('labels::Can this attribute be changed frame to frame?')}>
                 <Form.Item
                     name={[key, 'mutable']}
                     valuePropName='checked'
                 >
                     <Checkbox className='cvat-attribute-mutable-checkbox' disabled={locked}>
-                        Mutable
+                        {i18n.t('labels::Mutable')}
                     </Checkbox>
                 </Form.Item>
             </CVATTooltip>
@@ -396,7 +397,7 @@ export default class LabelForm extends React.Component<Props> {
         const { key } = fieldInstance;
 
         return (
-            <CVATTooltip title='Delete the attribute'>
+            <CVATTooltip title={i18n.t('labels::Delete the attribute')}>
                 <Form.Item>
                     <Button
                         type='link'
@@ -406,9 +407,8 @@ export default class LabelForm extends React.Component<Props> {
                                 Modal.confirm({
                                     className: 'cvat-modal-delete-label-attribute',
                                     icon: <ExclamationCircleOutlined />,
-                                    title: `Do you want to remove the "${attr.name}" attribute?`,
-                                    content: 'This action cannot be undone. ' +
-                                        'Corresponding attribute annotation values will be removed.',
+                                    title: i18n.t('labels::Do you want to remove the "{{name}}" attribute?', { name: attr.name }),
+                                    content: i18n.t('labels::This action cannot be undone. Corresponding attribute annotation values will be removed.'),
                                     type: 'warning',
                                     okButtonProps: { type: 'primary', danger: true },
                                     onOk: () => {
@@ -478,7 +478,7 @@ export default class LabelForm extends React.Component<Props> {
                 rules={[
                     {
                         required: true,
-                        message: 'Please specify a name',
+                        message: i18n.t('labels::Please specify a name'),
                     },
                     {
                         pattern: patterns.validateAttributeName.pattern,
@@ -487,7 +487,7 @@ export default class LabelForm extends React.Component<Props> {
                     {
                         validator: (_rule: any, labelName: string) => {
                             if (labelNames.includes(labelName) && label?.name !== labelName) {
-                                return Promise.reject(new Error('Label name must be unique'));
+                                return Promise.reject(new Error(i18n.t('labels::Label name must be unique')));
                             }
                             return Promise.resolve();
                         },
@@ -496,7 +496,7 @@ export default class LabelForm extends React.Component<Props> {
             >
                 <Input
                     ref={this.inputNameRef}
-                    placeholder='Label name'
+                    placeholder={i18n.t('labels::Label name')}
                     className='cvat-label-name-input'
                     onKeyUp={(event): void => {
                         if (event.key === 'Escape' || event.key === 'Esc' || event.keyCode === 27) {
@@ -547,7 +547,7 @@ export default class LabelForm extends React.Component<Props> {
         return (
             <Form.Item>
                 <Button onClick={this.addAttribute} className='cvat-new-attribute-button'>
-                    Add an attribute
+                    {i18n.t('labels::Add an attribute')}
                     <PlusCircleOutlined />
                 </Button>
             </Form.Item>
@@ -556,8 +556,8 @@ export default class LabelForm extends React.Component<Props> {
 
     private renderSaveButton(): JSX.Element {
         const { label } = this.props;
-        const tooltipTitle = label ? 'Save the label and return' : 'Save the label and create one more';
-        const buttonText = label ? 'Done' : 'Continue';
+        const tooltipTitle = label ? i18n.t('labels::Save the label and return') : i18n.t('labels::Save the label and create one more');
+        const buttonText = label ? i18n.t('labels::Done') : i18n.t('labels::Continue');
 
         return (
             <CVATTooltip title={tooltipTitle}>
@@ -577,7 +577,7 @@ export default class LabelForm extends React.Component<Props> {
         const { onCancel } = this.props;
 
         return (
-            <CVATTooltip title='Do not save the label and return'>
+            <CVATTooltip title={i18n.t('labels::Do not save the label and return')}>
                 <Button
                     className='cvat-cancel-new-label-button'
                     type='primary'
@@ -587,7 +587,7 @@ export default class LabelForm extends React.Component<Props> {
                         onCancel();
                     }}
                 >
-                    Cancel
+                    {i18n.t('common::Cancel')}
                 </Button>
             </CVATTooltip>
         );
@@ -599,7 +599,7 @@ export default class LabelForm extends React.Component<Props> {
                 {() => (
                     <Form.Item name='color'>
                         <ColorPicker placement='bottom'>
-                            <CVATTooltip title='Change color of the label'>
+                            <CVATTooltip title={i18n.t('labels::Change color of the label')}>
                                 <Button type='default' className='cvat-change-task-label-color-button'>
                                     <Badge
                                         className='cvat-change-task-label-color-badge'

@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Empty from 'antd/lib/empty';
 import { Row, Col } from 'antd/lib/grid';
@@ -17,27 +18,28 @@ interface Props {
 
 export default function EmptyListComponent(props: Props): JSX.Element {
     const { notFound } = props;
+    const { t } = useTranslation('cloud-storages');
 
     return (
         <div className='cvat-empty-cloud-storages-list'>
             <Empty
                 description={notFound ? (
-                    <Text strong>No results matched your search...</Text>
+                    <Text strong>{t('No results matched your search...')}</Text>
                 ) : (
                     <>
                         <Row justify='center' align='middle'>
                             <Col>
-                                <Text strong>No cloud storages attached yet...</Text>
+                                <Text strong>{t('No cloud storages attached yet...')}</Text>
                             </Col>
                         </Row>
                         <Row justify='center' align='middle'>
                             <Col>
-                                <Text type='secondary'>To get started with your cloud storage</Text>
+                                <Text type='secondary'>{t('To get started with your cloud storage')}</Text>
                             </Col>
                         </Row>
                         <Row justify='center' align='middle'>
                             <Col>
-                                <Link to='/cloudstorages/create'>attach a new one</Link>
+                                <Link to='/cloudstorages/create'>{t('attach a new one')}</Link>
                             </Col>
                         </Row>
                     </>

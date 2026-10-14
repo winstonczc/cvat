@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactDOM from 'react-dom';
 import Text from 'antd/lib/typography/Text';
 import Slider from 'antd/lib/slider';
@@ -18,6 +19,7 @@ export const MAX_ACCURACY = 13;
 
 function ApproximationAccuracy(props: Props): React.ReactPortal | null {
     const { approxPolyAccuracy, onChange } = props;
+    const { t } = useTranslation('annotation');
     const target = window.document.getElementsByClassName('cvat-canvas-container')[0];
 
     return target ?
@@ -36,7 +38,7 @@ function ApproximationAccuracy(props: Props): React.ReactPortal | null {
                         onChange={onChange}
                     />
                 </Col>
-                <Text type='secondary'>approximation accuracy</Text>
+                <Text type='secondary'>{t('approximation accuracy')}</Text>
             </Row>,
             target,
         ) :

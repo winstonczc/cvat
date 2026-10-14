@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import Icon, {
     UnlockOutlined,
@@ -110,8 +111,9 @@ function NavigateFirstKeyframe(props: Props): JSX.Element {
 
 function NavigatePrevKeyframe(props: Props): JSX.Element {
     const { prevKeyFrameShortcut, navigatePrevKeyframe } = props;
+    const { t } = useTranslation('annotation');
     return navigatePrevKeyframe ? (
-        <CVATTooltip title={`Go to previous keyframe ${prevKeyFrameShortcut}`}>
+        <CVATTooltip title={`${t('Go to previous keyframe')} ${prevKeyFrameShortcut}`}>
             <Icon {...classes.prevKeyFrame} component={PreviousIcon} onClick={navigatePrevKeyframe} />
         </CVATTooltip>
     ) : (
@@ -121,8 +123,9 @@ function NavigatePrevKeyframe(props: Props): JSX.Element {
 
 function NavigateNextKeyframe(props: Props): JSX.Element {
     const { navigateNextKeyframe, nextKeyFrameShortcut } = props;
+    const { t } = useTranslation('annotation');
     return navigateNextKeyframe ? (
-        <CVATTooltip title={`Go to next keyframe ${nextKeyFrameShortcut}`}>
+        <CVATTooltip title={`${t('Go to next keyframe')} ${nextKeyFrameShortcut}`}>
             <Icon {...classes.nextKeyFrame} component={NextIcon} onClick={navigateNextKeyframe} />
         </CVATTooltip>
     ) : (
@@ -143,8 +146,9 @@ function SwitchLock(props: Props): JSX.Element {
     const {
         locked, switchLockShortcut, lock, unlock,
     } = props;
+    const { t } = useTranslation('annotation');
     return (
-        <CVATTooltip title={`Switch lock property ${switchLockShortcut}`}>
+        <CVATTooltip title={`${t('Switch lock property')} ${switchLockShortcut}`}>
             {locked ? (
                 <LockFilled {...classes.lock.enabled} onClick={unlock} />
             ) : (
@@ -159,9 +163,10 @@ function SwitchOccluded(props: Props): JSX.Element {
         switchOccludedShortcut, locked, occluded, unsetOccluded, setOccluded,
     } = props;
 
+    const { t } = useTranslation('annotation');
     const style = locked ? disabledStyle : {};
     return (
-        <CVATTooltip title={`Switch occluded property ${switchOccludedShortcut}`}>
+        <CVATTooltip title={`${t('Switch occluded property')} ${switchOccludedShortcut}`}>
             {occluded ? (
                 <TeamOutlined
                     {...classes.occluded.enabled}
@@ -184,9 +189,10 @@ function SwitchPinned(props: Props): JSX.Element {
         switchPinnedShortcut, locked, pinned, pin, unpin,
     } = props;
 
+    const { t } = useTranslation('annotation');
     const style = locked ? disabledStyle : {};
     return (
-        <CVATTooltip title={`Switch pinned property ${switchPinnedShortcut}`}>
+        <CVATTooltip title={`${t('Switch pinned property')} ${switchPinnedShortcut}`}>
             {pinned ? (
                 <PushpinFilled
                     {...classes.pinned.enabled}
@@ -209,9 +215,10 @@ function SwitchHidden(props: Props): JSX.Element {
         switchHiddenShortcut, locked, hidden, hiddenDisabled, show, hide,
     } = props;
 
+    const { t } = useTranslation('annotation');
     const style = hiddenDisabled || locked ? disabledStyle : {};
     return (
-        <CVATTooltip title={`Switch hidden property ${switchHiddenShortcut}`}>
+        <CVATTooltip title={`${t('Switch hidden property')} ${switchHiddenShortcut}`}>
             {hidden ? (
                 <EyeInvisibleFilled
                     {...classes.hidden.enabled}
@@ -234,9 +241,10 @@ function SwitchOutside(props: Props): JSX.Element {
         outside, locked, switchOutsideShortcut, outsideDisabled, unsetOutside, setOutside,
     } = props;
 
+    const { t } = useTranslation('annotation');
     const style = outsideDisabled || locked ? disabledStyle : {};
     return (
-        <CVATTooltip title={`Switch outside property ${switchOutsideShortcut}`}>
+        <CVATTooltip title={`${t('Switch outside property')} ${switchOutsideShortcut}`}>
             {outside ? (
                 <Icon
                     {...classes.outside.enabled}
@@ -260,9 +268,10 @@ function SwitchKeyframe(props: Props): JSX.Element {
         keyframe, locked, switchKeyFrameShortcut, keyframeDisabled, unsetKeyframe, setKeyframe,
     } = props;
 
+    const { t } = useTranslation('annotation');
     const style = keyframeDisabled || locked ? disabledStyle : {};
     return (
-        <CVATTooltip title={`Switch keyframe property ${switchKeyFrameShortcut}`}>
+        <CVATTooltip title={`${t('Switch keyframe property')} ${switchKeyFrameShortcut}`}>
             {keyframe ? (
                 <StarFilled
                     style={style}

@@ -3,8 +3,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import Button from 'antd/lib/button';
 import { PlusOutlined } from '@ant-design/icons';
@@ -22,12 +23,8 @@ import dimensions from 'utils/dimensions';
 
 import {
     localStorageRecentKeyword, localStorageRecentCapacity,
-    predefinedFilterValues, config,
+    getPredefinedFilterValues, getFilterConfig,
 } from './cloud-storages-filter-configuration';
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues,
-);
 
 interface Props {
     onApplyFilter(filter: string | null): void;
@@ -43,7 +40,11 @@ export default function StoragesTopBar(props: Readonly<Props>): JSX.Element {
         query, onApplyFilter, onApplySorting, onApplySearch, selectedCount, onSelectAll,
     } = props;
     const history = useHistory();
+    const { t, i18n } = useTranslation('cloud-storages');
     const [visibility, setVisibility] = useState(defaultVisibility);
+    const FilteringComponent = useMemo(() => ResourceFilterHOC(
+        getFilterConfig(), localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues(),
+    ), [i18n.language]);
 
     return (
         <Row justify='center' align='middle' className='cvat-cloud-storages-list-top-bar cvat-resource-top-bar-wrapper'>
@@ -57,7 +58,7 @@ export default function StoragesTopBar(props: Readonly<Props>): JSX.Element {
                             }}
                             defaultValue={query.search ?? ''}
                             className='cvat-cloudstorages-page-tasks-search-bar'
-                            placeholder='Search ...'
+                            placeholder={t('Search ...')}
                         />
                         <ResourceSelectionInfo selectedCount={selectedCount} onSelectAll={onSelectAll} />
                     </div>

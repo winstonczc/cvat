@@ -18,6 +18,7 @@ import React, {
     useState, useMemo,
     useCallback,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ShortcutScope } from 'utils/enums';
 import { KeyMap } from 'utils/mousetrap-react';
 import { shortcutsActions } from 'actions/shortcuts-actions';
@@ -32,6 +33,7 @@ interface Props {
 
 function ShortcutsSettingsComponent(props: Props): JSX.Element {
     const { keyMap, onKeySequenceUpdate } = props;
+    const { t } = useTranslation('settings');
     const [searchValue, setSearchValue] = useState('');
     const shortcuts = useSelector((state: CombinedState) => state.shortcuts);
     const [activeKeys, setActiveKeys] = useState<string[]>([]);
@@ -43,10 +45,10 @@ function ShortcutsSettingsComponent(props: Props): JSX.Element {
 
     const onRestoreDefaults = useCallback(() => {
         Modal.confirm({
-            title: 'Are you sure you want to restore defaults?',
-            okText: 'Yes',
+            title: t('Are you sure you want to restore defaults?'),
+            okText: t('Yes'),
             className: 'cvat-shortcuts-settings-restore-modal',
-            cancelText: 'No',
+            cancelText: t('No'),
             onOk: () => {
                 const currentSettings = localStorage.getItem('clientSettings');
                 dispatch(shortcutsActions.registerShortcuts({ ...shortcuts.defaultState }));
@@ -61,14 +63,14 @@ function ShortcutsSettingsComponent(props: Props): JSX.Element {
                 }
             },
         });
-    }, [shortcuts.defaultState]);
+    }, [shortcuts.defaultState, t]);
 
     const filteredKeyMap = useMemo(() => Object.entries(keyMap).filter(
         ([, item]) => (
-            item.name.toLowerCase().includes(searchValue) ||
-            item.description.toLowerCase().includes(searchValue)
+            t(`shortcuts::${item.name}`).toLowerCase().includes(searchValue) ||
+            t(`shortcuts::${item.description}`).toLowerCase().includes(searchValue)
         ),
-    ), [keyMap, searchValue]);
+    ), [keyMap, searchValue, t]);
 
     const items: any = useMemo(() => {
         const scopeItems = Object.values(ShortcutScope).map((scope: string) => {
@@ -87,7 +89,7 @@ function ShortcutsSettingsComponent(props: Props): JSX.Element {
                 scopeTitle.slice(firstAlphaIndex + 1).toLowerCase();
             }
             return {
-                label: <span className='cvat-shortcuts-settings-label'>{scopeTitle}</span>,
+                label: <span className='cvat-shortcuts-settings-label'>{t(`shortcuts::${scopeTitle}`)}</span>,
                 key: scope,
                 showArrow: !searchValue,
                 children: (
@@ -99,8 +101,8 @@ function ShortcutsSettingsComponent(props: Props): JSX.Element {
                             >
                                 <List.Item.Meta
                                     className={`${item.nonActive ? 'cvat-shortcuts-settings-item-non-active' : ''}`}
-                                    title={<p className='cvat-shortcuts-settings-item-title'>{item.name}</p>}
-                                    description={<span className='cvat-shortcuts-settings-item-description'>{item.description}</span>}
+                                    title={<p className='cvat-shortcuts-settings-item-title'>{t(`shortcuts::${item.name}`)}</p>}
+                                    description={<span className='cvat-shortcuts-settings-item-description'>{t(`shortcuts::${item.description}`)}</span>}
                                 />
                                 <MultipleShortcutsDisplay
                                     id={id}
@@ -121,7 +123,7 @@ function ShortcutsSettingsComponent(props: Props): JSX.Element {
         }
 
         return scopeItems;
-    }, [filteredKeyMap]);
+    }, [filteredKeyMap, t]);
 
     const handleCollapseChange = (keys: string[] | string): void => {
         if (!searchValue) {
@@ -136,18 +138,18 @@ function ShortcutsSettingsComponent(props: Props): JSX.Element {
                     <Flex gap={4}>
                         <Search
                             size='large'
-                            placeholder='Search for a shortcut here...'
+                            placeholder={t('Search for a shortcut here...')}
                             allowClear
                             onChange={onSearchChange}
                             className='cvat-shortcuts-settings-search'
                         />
-                        <Button size='large' onClick={onRestoreDefaults} className='cvat-shortcuts-settings-restore'>Restore Defaults</Button>
+                        <Button size='large' onClick={onRestoreDefaults} className='cvat-shortcuts-settings-restore'>{t('Restore Defaults')}</Button>
                     </Flex>
                 </Col>
             </Row>
             <Row className='cvat-shortcuts-setting'>
                 <Col span={24}>
-                    <Alert message='Shortcut may consist of any combination of modifiers (alt, ctrl, command, or shift) and one non-modifier at the end. Some key combinations may be reserved by the browser and cannot be overridden in CVAT.' type='warning' showIcon />
+                    <Alert message={t('Shortcut may consist of any combination of modifiers (alt, ctrl, command, or shift) and one non-modifier at the end. Some key combinations may be reserved by the browser and cannot be overridden in CVAT.')} type='warning' showIcon />
                     {items ? (
                         <Collapse
                             items={items}

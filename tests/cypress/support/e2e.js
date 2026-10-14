@@ -29,3 +29,11 @@ Cypress.on('uncaught:exception', (err) => {
     }
     return true;
 });
+
+// Pin UI language to English: tests assert on English text (607 cy.contains calls).
+// cvat-ui i18n detection order is localStorage('cvat-language') -> navigator,
+// so seeding localStorage before app scripts run keeps tests hermetic
+// even when the runner browser reports a non-English locale.
+Cypress.on('window:before:load', (win) => {
+    win.localStorage.setItem('cvat-language', 'en');
+});

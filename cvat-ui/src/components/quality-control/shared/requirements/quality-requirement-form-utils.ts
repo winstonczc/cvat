@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
 import {
     Label, QualityRequirement, QualityRequirementSaveFields, QualitySettings,
 } from 'cvat-core-wrapper';
@@ -35,29 +36,31 @@ export const ROOT_DEFAULTS = {
     panopticComparison: true,
 };
 
-export const METRIC_OPTION_GROUPS: Array<{
+export function getMetricOptionGroups(): Array<{
     label: string;
     options: QualityRequirementMetric[];
-}> = [
-    {
-        label: 'Micro average',
-        options: Object.values(QualityRequirementMetric),
-    },
-    {
-        label: 'Macro average',
-        options: Object.values(QualityRequirementMetric).map((metric) => serializeQualityTargetMetric({
-            metric,
-            aggregation: QualityMetricAggregation.MEAN,
-        })),
-    },
-    {
-        label: 'Worst label',
-        options: Object.values(QualityRequirementMetric).map((metric) => serializeQualityTargetMetric({
-            metric,
-            aggregation: QualityMetricAggregation.LABEL,
-        })),
-    },
-];
+}> {
+    return [
+        {
+            label: i18n.t('quality::Micro average'),
+            options: Object.values(QualityRequirementMetric),
+        },
+        {
+            label: i18n.t('quality::Macro average'),
+            options: Object.values(QualityRequirementMetric).map((metric) => serializeQualityTargetMetric({
+                metric,
+                aggregation: QualityMetricAggregation.MEAN,
+            })),
+        },
+        {
+            label: i18n.t('quality::Worst label'),
+            options: Object.values(QualityRequirementMetric).map((metric) => serializeQualityTargetMetric({
+                metric,
+                aggregation: QualityMetricAggregation.LABEL,
+            })),
+        },
+    ];
+}
 export const POINT_SIZE_BASE_OPTIONS: QualityRequirementPointSizeBase[] = Object.values(
     QualityRequirementPointSizeBase,
 );
@@ -512,7 +515,7 @@ export function getCopiedInitialValues(
 ): RequirementFormValues {
     return {
         ...getInitialValues(copiedRequirement, null, requirements),
-        name: `Copy of ${copiedRequirement.name}`,
+        name: i18n.t('quality::Copy of {{name}}', { name: copiedRequirement.name }),
         parentRequirement: parentRequirement?.id ?? copiedRequirement.parentRequirementId ?? null,
     };
 }
@@ -761,12 +764,12 @@ export function validateJsonLogic(_: unknown, value: string | undefined): Promis
     try {
         const parsedValue = JSON.parse(value);
         if (!parsedValue || Array.isArray(parsedValue) || typeof parsedValue !== 'object') {
-            return Promise.reject(new Error('Filter must be a JSON logic object'));
+            return Promise.reject(new Error(i18n.t('quality::Filter must be a JSON logic object')));
         }
 
         return Promise.resolve();
     } catch (_error: unknown) {
-        return Promise.reject(new Error('Filter must be valid JSON logic'));
+        return Promise.reject(new Error(i18n.t('quality::Filter must be valid JSON logic')));
     }
 }
 

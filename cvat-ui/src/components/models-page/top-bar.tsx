@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import Input from 'antd/lib/input';
 import {
@@ -15,12 +16,8 @@ import { CombinedState, ModelsQuery } from 'reducers';
 import { usePlugins } from 'utils/hooks';
 import dimensions from 'utils/dimensions';
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getModelsFilterConfig,
 } from './models-filter-configuration';
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity,
-);
 
 interface VisibleTopBarProps {
     onApplyFilter(filter: string | null): void;
@@ -37,7 +34,12 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
         query, onApplyFilter, onApplySorting, onApplySearch, disabled, selectedCount, onSelectAll,
     } = props;
     const [visibility, setVisibility] = useState(defaultVisibility);
+    const { t, i18n } = useTranslation('models');
     const plugins = usePlugins((state: CombinedState) => state.plugins.components.modelsPage.topBar.items, props);
+
+    const FilteringComponent = useMemo(() => ResourceFilterHOC(
+        getModelsFilterConfig(), localStorageRecentKeyword, localStorageRecentCapacity,
+    ), [i18n.language]);
     const controls = [];
     if (plugins.length) {
         controls.push(
@@ -60,7 +62,7 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
                             }}
                             defaultValue={query.search || ''}
                             className='cvat-models-page-search-bar'
-                            placeholder='Search ...'
+                            placeholder={t('Search ...')}
                         />
                         <ResourceSelectionInfo selectedCount={selectedCount} onSelectAll={onSelectAll} />
                     </div>

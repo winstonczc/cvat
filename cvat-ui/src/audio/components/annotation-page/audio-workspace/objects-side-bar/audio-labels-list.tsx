@@ -6,6 +6,7 @@ import React, {
     useCallback, useEffect, useMemo,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import i18n from 'i18next';
 import { shallowEqual, ThunkDispatch } from 'utils/redux';
 import message from 'antd/lib/message';
 
@@ -148,9 +149,12 @@ function AudioLabelsList(): JSX.Element {
                 updated[key] = {
                     ...updated[key],
                     nonActive: false,
-                    name: `Switch audio label to ${labelName}`,
-                    description: `Change the label to ${labelName} for the active audio region,
+                    name: i18n.t('shortcuts::Switch audio label to {{label}}', { label: labelName }),
+                    description: i18n.t(
+                        `shortcuts::Change the label to {{label}} for the active audio region,
                         or set it as default for the next created region`,
+                        { label: labelName },
+                    ),
                 };
             }
         }

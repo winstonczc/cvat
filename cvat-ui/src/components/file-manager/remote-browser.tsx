@@ -5,6 +5,7 @@
 import React, {
     MouseEvent, useEffect, useState, useRef, useCallback,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import Breadcrumb from 'antd/lib/breadcrumb';
 import Button from 'antd/lib/button';
 import Pagination from 'antd/lib/pagination';
@@ -116,6 +117,7 @@ const updateRoot = (root: Node, prefix?: string): Node => {
 };
 
 function RemoteBrowser(props: Props): JSX.Element {
+    const { t } = useTranslation('common');
     const { SHARE_MOUNT_GUIDE_URL } = config;
     const {
         resource, manifestPath, defaultPrefix, onSelectFiles,
@@ -369,7 +371,7 @@ function RemoteBrowser(props: Props): JSX.Element {
                             </CVATTooltip>
                         )}
                         disabled={isFetching}
-                        placeholder='Search by prefix'
+                        placeholder={t('Search by prefix')}
                         value={curSearchString}
                         onBlur={() => resetDataSource()}
                         onPressEnter={() => resetDataSource()}
@@ -379,7 +381,7 @@ function RemoteBrowser(props: Props): JSX.Element {
                     />
                 </Col>
                 <Col>
-                    <CVATTooltip title='Refresh'>
+                    <CVATTooltip title={t('Refresh')}>
                         <Button
                             disabled={isFetching}
                             onClick={() => {

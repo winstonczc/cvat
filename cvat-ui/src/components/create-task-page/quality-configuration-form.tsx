@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { RefObject } from 'react';
+import i18n from 'i18next';
 import Input from 'antd/lib/input';
 import Form, { FormInstance } from 'antd/lib/form';
 import { PercentageOutlined } from '@ant-design/icons';
@@ -121,16 +122,21 @@ export default class QualityConfigurationForm extends React.PureComponent<Props>
                     <Col>
                         <Form.Item
                             name='frameSelectionMethod'
-                            label='Frame selection method'
-                            rules={[{ required: true, message: 'Please, specify frame selection method' }]}
+                            label={i18n.t('tasks::Frame selection method')}
+                            rules={[{
+                                required: true,
+                                message: i18n.t('tasks::Please, specify frame selection method'),
+                            }]}
                         >
                             <Select
                                 className='cvat-select-frame-selection-method'
                                 onChange={onChangeFrameSelectionMethod}
                             >
-                                <Select.Option value={FrameSelectionMethod.RANDOM}>Random</Select.Option>
+                                <Select.Option value={FrameSelectionMethod.RANDOM}>
+                                    {i18n.t('tasks::Random')}
+                                </Select.Option>
                                 <Select.Option value={FrameSelectionMethod.RANDOM_PER_JOB}>
-                                    Random per job
+                                    {i18n.t('tasks::Random per job')}
                                 </Select.Option>
                             </Select>
                         </Form.Item>
@@ -141,13 +147,16 @@ export default class QualityConfigurationForm extends React.PureComponent<Props>
                     supportsValidationQuantity && frameSelectionMethod === FrameSelectionMethod.RANDOM && (
                         <Col span={7}>
                             <Form.Item
-                                label='Quantity'
+                                label={i18n.t('tasks::Quantity')}
                                 name='validationFramesPercent'
                                 normalize={(value) => +value}
                                 rules={[
-                                    { required: true, message: 'The field is required' },
+                                    { required: true, message: i18n.t('tasks::The field is required') },
                                     {
-                                        type: 'number', min: 0, max: 100, message: 'Value is not valid',
+                                        type: 'number',
+                                        min: 0,
+                                        max: 100,
+                                        message: i18n.t('tasks::Value is not valid'),
                                     },
                                 ]}
                             >
@@ -166,13 +175,16 @@ export default class QualityConfigurationForm extends React.PureComponent<Props>
                     supportsValidationQuantity && frameSelectionMethod === FrameSelectionMethod.RANDOM_PER_JOB && (
                         <Col span={7}>
                             <Form.Item
-                                label='Quantity per job'
+                                label={i18n.t('tasks::Quantity per job')}
                                 name='validationFramesPerJobPercent'
                                 normalize={(value) => +value}
                                 rules={[
-                                    { required: true, message: 'The field is required' },
+                                    { required: true, message: i18n.t('tasks::The field is required') },
                                     {
-                                        type: 'number', min: 0, max: 100, message: 'Value is not valid',
+                                        type: 'number',
+                                        min: 0,
+                                        max: 100,
+                                        message: i18n.t('tasks::Value is not valid'),
                                     },
                                 ]}
                             >
@@ -196,13 +208,16 @@ export default class QualityConfigurationForm extends React.PureComponent<Props>
             <Row>
                 <Col span={7}>
                     <Form.Item
-                        label='Total honeypots'
+                        label={i18n.t('tasks::Total honeypots')}
                         name='validationFramesPercent'
                         normalize={(value) => +value}
                         rules={[
-                            { required: true, message: 'The field is required' },
+                            { required: true, message: i18n.t('tasks::The field is required') },
                             {
-                                type: 'number', min: 0, max: 100, message: 'Value is not valid',
+                                type: 'number',
+                                min: 0,
+                                max: 100,
+                                message: i18n.t('tasks::Value is not valid'),
                             },
                         ]}
                     >
@@ -211,13 +226,16 @@ export default class QualityConfigurationForm extends React.PureComponent<Props>
                 </Col>
                 <Col span={7} offset={1}>
                     <Form.Item
-                        label='Overhead per job'
+                        label={i18n.t('tasks::Overhead per job')}
                         name='validationFramesPerJobPercent'
                         normalize={(value) => +value}
                         rules={[
-                            { required: true, message: 'The field is required' },
+                            { required: true, message: i18n.t('tasks::The field is required') },
                             {
-                                type: 'number', min: 0, max: 100, message: 'Value is not valid',
+                                type: 'number',
+                                min: 0,
+                                max: 100,
+                                message: i18n.t('tasks::Value is not valid'),
                             },
                         ]}
                     >
@@ -248,7 +266,7 @@ export default class QualityConfigurationForm extends React.PureComponent<Props>
                 ref={this.formRef}
             >
                 <Form.Item
-                    label='Validation mode'
+                    label={i18n.t('tasks::Validation mode')}
                     name='validationMode'
                     rules={[{ required: true }]}
                 >
@@ -259,14 +277,14 @@ export default class QualityConfigurationForm extends React.PureComponent<Props>
                         }}
                     >
                         <Radio.Button value={ValidationMode.NONE} key={ValidationMode.NONE}>
-                            None
+                            {i18n.t('tasks::None')}
                         </Radio.Button>
                         <Radio.Button value={ValidationMode.GT} key={ValidationMode.GT}>
-                            Ground Truth
+                            {i18n.t('tasks::Ground Truth')}
                         </Radio.Button>
                         {supportsHoneypots && (
                             <Radio.Button value={ValidationMode.HONEYPOTS} key={ValidationMode.HONEYPOTS}>
-                                Honeypots
+                                {i18n.t('tasks::Honeypots')}
                             </Radio.Button>
                         )}
                     </Radio.Group>

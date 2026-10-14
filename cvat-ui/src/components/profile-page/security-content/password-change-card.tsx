@@ -4,6 +4,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import { Col, Row } from 'antd/lib/grid';
 import Card from 'antd/lib/card';
@@ -15,6 +16,7 @@ import { changePasswordAsync } from 'actions/auth-actions';
 import ChangePasswordForm from './change-password-form';
 
 function PasswordChangeCard(): JSX.Element {
+    const { t } = useTranslation('profile');
     const dispatch = useDispatch();
     const [showPasswordForm, setShowPasswordForm] = useState(false);
 
@@ -32,7 +34,7 @@ function PasswordChangeCard(): JSX.Element {
 
     return (
         <Card
-            title='Password'
+            title={t('common::Password')}
             className='cvat-security-password-card'
             style={{ marginBottom: 16 }}
         >
@@ -42,12 +44,12 @@ function PasswordChangeCard(): JSX.Element {
                 <Row justify='space-between' align='middle'>
                     <Col>
                         <Typography.Text type='secondary'>
-                            Keep your account secure with a strong, unique password
+                            {t('Keep your account secure with a strong, unique password')}
                         </Typography.Text>
                     </Col>
                     <Col>
                         <Button className='cvat-security-password-change-button' onClick={onShowPasswordForm} type='primary'>
-                            Change password
+                            {t('common::Change password')}
                         </Button>
                     </Col>
                 </Row>

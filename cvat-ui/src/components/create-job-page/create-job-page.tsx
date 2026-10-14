@@ -5,6 +5,7 @@
 import './styles.scss';
 
 import React, { useEffect, useState } from 'react';
+import i18n from 'i18next';
 import { useParams } from 'react-router';
 import { Row, Col } from 'antd/lib/grid';
 import Text from 'antd/lib/typography/Text';
@@ -33,7 +34,7 @@ function CreateJobPage(): JSX.Element {
                 }).catch((error: Error) => {
                     if (isMounted()) {
                         notification.error({
-                            message: 'Could not fetch requested task from the server',
+                            message: i18n.t('jobs::Could not fetch requested task from the server'),
                             description: error.toString(),
                         });
                     }
@@ -44,7 +45,7 @@ function CreateJobPage(): JSX.Element {
                 });
         } else {
             notification.error({
-                message: 'Could not receive the requested task from the server',
+                message: i18n.t('jobs::Could not receive the requested task from the server'),
                 description: `Requested task id "${id}" is not valid`,
             });
             setFetchingTask(false);

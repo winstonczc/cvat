@@ -2,43 +2,50 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
 import { Config } from '@react-awesome-query-builder/antd';
 import asyncFetchUsers from 'components/resource-sorting-filtering/request-users';
 
-export const config: Partial<Config> = {
-    fields: {
-        user: {
-            label: 'User',
-            type: 'select',
-            valueSources: ['value'],
-            operators: ['select_equals'],
-            fieldSettings: {
-                useAsyncSearch: true,
-                forceAsyncSearch: true,
-                asyncFetch: asyncFetchUsers,
+// the configuration contains user-visible labels, so it must be
+// evaluated on each render to react to language switching
+export function getFilterConfiguration(): Partial<Config> {
+    return {
+        fields: {
+            user: {
+                label: i18n.t('organizations::User'),
+                type: 'select',
+                valueSources: ['value'],
+                operators: ['select_equals'],
+                fieldSettings: {
+                    useAsyncSearch: true,
+                    forceAsyncSearch: true,
+                    asyncFetch: asyncFetchUsers,
+                },
+            },
+            role: {
+                label: i18n.t('organizations::Role'),
+                type: 'select',
+                operators: ['select_equals'],
+                valueSources: ['value'],
+                fieldSettings: {
+                    listValues: [
+                        { value: 'worker', title: i18n.t('organizations::Worker') },
+                        { value: 'supervisor', title: i18n.t('organizations::Supervisor') },
+                        { value: 'maintainer', title: i18n.t('organizations::Maintainer') },
+                        { value: 'owner', title: i18n.t('organizations::Owner') },
+                    ],
+                },
             },
         },
-        role: {
-            label: 'Role',
-            type: 'select',
-            operators: ['select_equals'],
-            valueSources: ['value'],
-            fieldSettings: {
-                listValues: [
-                    { value: 'worker', title: 'Worker' },
-                    { value: 'supervisor', title: 'Supervisor' },
-                    { value: 'maintainer', title: 'Maintainer' },
-                    { value: 'owner', title: 'Owner' },
-                ],
-            },
-        },
-    },
-};
+    };
+}
 
 export const localStorageRecentCapacity = 10;
 export const localStorageRecentKeyword = 'recentlyAppliedMembershipsFilters';
-export const predefinedFilterValues = {
-    Workers: '{"and":[{"==":[{"var":"role"},"worker"]}]}',
-    Supervisors: '{"and":[{"==":[{"var":"role"},"supervisor"]}]}',
-    Maintainers: '{"and":[{"==":[{"var":"role"},"maintainer"]}]}',
-};
+export function getPredefinedFilterValues(): Record<string, string> {
+    return {
+        [i18n.t('organizations::Workers')]: '{"and":[{"==":[{"var":"role"},"worker"]}]}',
+        [i18n.t('organizations::Supervisors')]: '{"and":[{"==":[{"var":"role"},"supervisor"]}]}',
+        [i18n.t('organizations::Maintainers')]: '{"and":[{"==":[{"var":"role"},"maintainer"]}]}',
+    };
+}

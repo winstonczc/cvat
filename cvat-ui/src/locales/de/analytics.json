@@ -1,0 +1,8 @@
+{
+    "Analytics for ": "Analysen für ",
+    "UTC start date": "UTC-Startdatum",
+    "UTC end date": "UTC-Enddatum",
+    "Export events": "Ereignisse exportieren",
+    "Could not export events for the target resource": "Ereignisse für die Zielressource konnten nicht exportiert werden",
+    "Could not receive the target resource from the server": "Die Zielressource konnte nicht vom Server abgerufen werden"
+}

@@ -6,6 +6,7 @@ import './styles.scss';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import { CombinedState } from 'reducers';
 import AutoComplete from 'antd/lib/auto-complete';
@@ -21,6 +22,7 @@ interface Props {
 
 function OrganizationSelector(props: Props): JSX.Element {
     const { setNewOrganization, defaultValue } = props;
+    const { t } = useTranslation();
 
     const defaultPage = 1;
     const [page, setPage] = useState(defaultPage);
@@ -82,14 +84,14 @@ function OrganizationSelector(props: Props): JSX.Element {
     return (
         <AutoComplete
             defaultValue={searchPhrase}
-            placeholder='Select an organization'
+            placeholder={t('organizations::Select an organization')}
             showSearch
             onSearch={_.debounce(setSearchPhrase, 500)}
             options={[
                 ...(
                     (currentOrg) ? [{
                         value: '',
-                        label: 'Personal workspace',
+                        label: t('header::Personal workspace'),
                     }] : []
                 ),
                 ...searchResults

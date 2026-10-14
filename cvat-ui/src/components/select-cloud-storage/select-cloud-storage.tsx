@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import Form from 'antd/lib/form';
 import notification from 'antd/lib/notification';
 import AutoComplete from 'antd/lib/auto-complete';
@@ -27,7 +29,7 @@ async function searchCloudStorages(filter: Record<string, string>): Promise<Clou
         return data;
     } catch (error) {
         notification.error({
-            message: 'Could not fetch a list of cloud storages',
+            message: i18n.t('common::Could not fetch a list of cloud storages'),
             description: error.toString(),
         });
     }
@@ -57,6 +59,7 @@ function SelectCloudStorage(props: Props): JSX.Element {
         onSelectCloudStorage,
         label,
     } = props;
+    const { t } = useTranslation('common');
     const [initialList, setInitialList] = useState<CloudStorage[]>([]);
     const [list, setList] = useState<CloudStorage[]>([]);
 
@@ -93,16 +96,16 @@ function SelectCloudStorage(props: Props): JSX.Element {
 
     return (
         <Form.Item
-            label={label || 'Select cloud storage'}
+            label={label || t('Select cloud storage')}
             name={name || 'cloudStorageSelect'}
-            rules={[{ required: true, message: 'Please, specify a cloud storage' }]}
+            rules={[{ required: true, message: t('Please, specify a cloud storage') }]}
             valuePropName='label'
             colon={false}
         >
             <AutoComplete
                 onBlur={onBlur}
                 value={searchPhrase}
-                placeholder='Search...'
+                placeholder={t('Search...')}
                 showSearch
                 onSearch={(phrase: string) => {
                     setSearchPhrase(phrase);

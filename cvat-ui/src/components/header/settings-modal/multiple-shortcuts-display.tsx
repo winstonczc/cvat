@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Select, Modal } from 'antd/lib';
 import { conflictDetector, unsetExistingShortcuts } from 'utils/conflict-detector';
 import { ShortcutScope } from 'utils/enums';
@@ -24,6 +25,7 @@ function MultipleShortcutsDisplay(props: Props): JSX.Element {
         onKeySequenceUpdate,
     } = props;
     const { sequences } = item;
+    const { t } = useTranslation('settings');
     const selectRef = useRef<React.ElementRef<typeof Select>>(null);
     const [focus, setFocus] = useState(false);
     const [pressedKeys, setPressedKeys] = useState<string[][]>([[]]);
@@ -42,24 +44,24 @@ function MultipleShortcutsDisplay(props: Props): JSX.Element {
         const conflictingShortcuts: Record<string, KeyMapItem> | null = conflictDetector(shortcut, keyMap);
         if (conflictingShortcuts) {
             Modal.confirm({
-                title: 'Conflicting shortcuts detected',
+                title: t('Conflicting shortcuts detected'),
                 content: (
                     <p>
-                        Added sequence conflicts with the following shortcuts:
+                        {t('Added sequence conflicts with the following shortcuts:')}
                         <br />
                         {Object.values(conflictingShortcuts).map((conflictingShortcut: KeyMapItem, idx) => (
                             <span key={`${idx} ${conflictingShortcut.name}`}>
-                                <strong>{conflictingShortcut.name}</strong>
+                                <strong>{t(`shortcuts::${conflictingShortcut.name}`)}</strong>
                                 {' '}
-                                in the scope
+                                {t('in the scope')}
                                 {' '}
                                 <strong>
-                                    {ShortcutScope[conflictingShortcut.scope].split('_').join(' ')}
+                                    {t(`shortcuts::${ShortcutScope[conflictingShortcut.scope].split('_').join(' ')}`)}
                                 </strong>
                                 <br />
                             </span>
                         ))}
-                        Would you like to unset the conflicting shortcuts?
+                        {t('Would you like to unset the conflicting shortcuts?')}
                     </p>
                 ),
                 onOk: () => {
@@ -76,8 +78,8 @@ function MultipleShortcutsDisplay(props: Props): JSX.Element {
         const containsMoreThanOneNonModifierKey = pressedKeys.flat().filter((key) => !isModifier(key)).length > 1;
         if (containsMoreThanOneNonModifierKey) {
             Modal.error({
-                title: 'Invalid key combination',
-                content: 'Only one non-modifier key can be used in a combination',
+                title: t('Invalid key combination'),
+                content: t('Only one non-modifier key can be used in a combination'),
             });
             setPressedKeys([[]]);
             setCurrentIdx(0);
@@ -153,7 +155,7 @@ function MultipleShortcutsDisplay(props: Props): JSX.Element {
             suffixIcon={null}
             dropdownStyle={{ display: 'none' }}
             mode='multiple'
-            placeholder='Register shortcut...'
+            placeholder={t('Register shortcut...')}
             value={sequences}
             className='cvat-shortcuts-settings-select'
             onKeyDown={handleKeyDown}

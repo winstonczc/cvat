@@ -3,7 +3,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Builder, Config, AntdConfig, ImmutableTree, Query, Utils as QbUtils,
 } from '@react-awesome-query-builder/antd';
@@ -165,6 +166,41 @@ export default function ResourceFilterHOC(
     ) as ImmutableTree;
 
     function ResourceFilterComponent(props: ResourceFilterProps): JSX.Element {
+        const { t, i18n: i18nInstance } = useTranslation('common');
+        // query-builder UI labels depend on the active language (react-hooks plugin is not enabled in this config)
+        const localizedConfig: Config = useMemo(() => ({
+            ...config,
+            settings: {
+                ...config.settings,
+                fieldLabel: t('Field'),
+                operatorLabel: t('Operator'),
+                valueLabel: t('Value'),
+                valuePlaceholder: t('Value'),
+                funcLabel: t('Function'),
+                fieldPlaceholder: t('Select field'),
+                operatorPlaceholder: t('Select operator'),
+                funcPlaceholder: t('Select function'),
+                addRuleLabel: t('Add rule'),
+                addGroupLabel: t('Add group'),
+                addSubRuleLabel: t('Add sub rule'),
+                delGroupLabel: t('Delete'),
+                deleteLabel: t('Delete'),
+                notLabel: t('Not'),
+                lockLabel: t('Lock'),
+                lockedLabel: t('Locked'),
+            },
+            // operator/conjunction captions (unknown captions fall back to the English key)
+            operators: Object.fromEntries(
+                Object.entries(config.operators).map(([key, operator]) => [
+                    key, { ...operator, label: operator.label ? t(operator.label) : operator.label },
+                ]),
+            ),
+            conjunctions: Object.fromEntries(
+                Object.entries(config.conjunctions).map(([key, conjunction]) => [
+                    key, { ...conjunction, label: t(conjunction.label) },
+                ]),
+            ),
+        }), [i18nInstance.language]);
         const {
             predefinedVisible, builderVisible, recentVisible, value,
             onPredefinedVisibleChange, onBuilderVisibleChange, onRecentVisibleChange, onApplyFilter,
@@ -295,7 +331,7 @@ export default function ResourceFilterHOC(
                                 type='default'
                                 onClick={() => onPredefinedVisibleChange(!predefinedVisible)}
                             >
-                                Quick filters
+                                {t('Quick filters')}
                                 { appliedFilter.predefined ?
                                     <FilterFilled /> :
                                     <FilterOutlined />}
@@ -356,14 +392,14 @@ export default function ResourceFilterHOC(
                                             () => onRecentVisibleChange(!recentVisible)
                                         }
                                     >
-                                        Recent
+                                        {t('Recent')}
                                         <DownOutlined />
                                     </Button>
                                 </Popover>
                             ) : null}
 
                             <Query
-                                {...config}
+                                {...localizedConfig}
                                 onChange={(tree: ImmutableTree) => {
                                     setState(tree);
                                 }}
@@ -384,7 +420,7 @@ export default function ResourceFilterHOC(
                                         });
                                     }}
                                 >
-                                    Reset
+                                    {t('Reset')}
                                 </Button>
                                 <Button
                                     className='cvat-apply-filters-button'
@@ -405,7 +441,7 @@ export default function ResourceFilterHOC(
                                         });
                                     }}
                                 >
-                                    Apply
+                                    {t('Apply')}
                                 </Button>
                             </Space>
                         </div>
@@ -417,7 +453,7 @@ export default function ResourceFilterHOC(
                         type='default'
                         onClick={() => onBuilderVisibleChange(!builderVisible)}
                     >
-                        Filter
+                        {t('Filter')}
                         { appliedFilter.built || appliedFilter.recent ?
                             <FilterFilled /> :
                             <FilterOutlined />}
@@ -430,7 +466,7 @@ export default function ResourceFilterHOC(
                     type='link'
                     onClick={() => { setAppliedFilter({ ...defaultAppliedFilter }); }}
                 >
-                    Clear filters
+                    {t('Clear filters')}
                 </Button>
             </div>
         );

@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { QuestionCircleOutlined } from '@ant-design/icons/lib/icons';
 import Text from 'antd/lib/typography/Text';
 import InputNumber from 'antd/lib/input-number';
@@ -13,7 +14,7 @@ import CVATTooltip from 'components/common/cvat-tooltip';
 import { Label, QualityRequirement, QualitySettings } from 'cvat-core-wrapper';
 import { defaultVisibility, ResourceFilterHOC } from 'components/resource-sorting-filtering';
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getJobsFilterConfig,
 } from './jobs-filter-configuration';
 import QualityRequirementsConstructor from '../requirements/quality-requirements-constructor';
 import QualityRequirementForm from '../requirements/quality-requirement-form';
@@ -34,14 +35,18 @@ type RequirementFormMode =
     { type: 'copy'; sourceRequirement: QualityRequirement; parentRequirement: QualityRequirement } |
     { type: 'edit'; requirement: QualityRequirement; enabledOverride: boolean };
 
-const FilteringComponentBase = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity,
-);
-const FilteringComponent = FilteringComponentBase as React.ComponentType<
-    Omit<React.ComponentProps<typeof FilteringComponentBase>, 'value' | 'onApplyFilter'>
->;
-
 export default function QualitySettingsForm(props: Readonly<Props>): JSX.Element | null {
+    const { i18n } = useTranslation();
+    // filter configuration contains localized labels, rebuild it on language change
+    const FilteringComponent = useMemo(() => {
+        const Base = ResourceFilterHOC(
+            getJobsFilterConfig(), localStorageRecentKeyword, localStorageRecentCapacity,
+        );
+        return Base as React.ComponentType<
+            Omit<React.ComponentProps<typeof Base>, 'value' | 'onApplyFilter'>
+        >;
+    }, [i18n.language]);
+
     const {
         form,
         settings,

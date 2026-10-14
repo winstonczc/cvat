@@ -5,6 +5,7 @@
 
 import './styles.scss';
 import React, { useEffect, useMemo, useState } from 'react';
+import i18n from 'i18next';
 import { useHistory, useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { shallowEqual } from 'utils/redux';
@@ -74,7 +75,7 @@ function TaskPageComponent(): JSX.Element {
             }
         } catch (error: any) {
             notification.error({
-                message: 'Could not receive the requested task from the server',
+                message: i18n.t('tasks::Could not receive the requested task from the server'),
                 description: error.toString(),
             });
         }

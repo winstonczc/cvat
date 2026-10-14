@@ -26,6 +26,7 @@ import { getUserAgreementsAsync } from 'actions/useragreements-actions';
 import CVATApplication from 'components/cvat-app';
 import PluginsEntrypoint from 'components/plugins-entrypoint';
 import LayoutGrid from 'components/layout-grid/layout-grid';
+import LocalizationProvider from 'i18n/localization-provider';
 import { logError } from 'cvat-logger';
 import createCVATStore, { getCVATStore } from 'cvat-store';
 import createRootReducer from 'reducers/root-reducer';
@@ -40,6 +41,7 @@ import { UserGrowthDataModifiableFields } from 'cvat-core-wrapper';
 import {
     CombinedState, GrowthState, NotificationsState, PluginsState,
 } from './reducers';
+import './i18n';
 import './utils/dayjs-wrapper';
 
 createCVATStore(createRootReducer);
@@ -164,11 +166,13 @@ const ReduxAppWrapper = connect(mapStateToProps, mapDispatchToProps)(CVATApplica
 const root = createRoot(document.getElementById('root') as HTMLDivElement);
 root.render((
     <Provider store={cvatStore}>
-        <BrowserRouter>
-            <PluginsEntrypoint />
-            <ReduxAppWrapper />
-        </BrowserRouter>
-        <LayoutGrid />
+        <LocalizationProvider>
+            <BrowserRouter>
+                <PluginsEntrypoint />
+                <ReduxAppWrapper />
+            </BrowserRouter>
+            <LayoutGrid />
+        </LocalizationProvider>
     </Provider>
 ));
 

@@ -3,9 +3,10 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import Button from 'antd/lib/button';
 import Popover from 'antd/lib/popover';
@@ -24,12 +25,8 @@ import {
 import dimensions from 'utils/dimensions';
 import ProjectsCSVExportButton from './projects-csv-export-button';
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues, getFilterConfig,
 } from './projects-filter-configuration';
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues,
-);
 
 interface Props {
     onApplyFilter(filter: string | null): void;
@@ -43,6 +40,13 @@ interface Props {
 
 function TopBarComponent(props: Readonly<Props>): JSX.Element {
     const dispatch = useDispatch();
+    const { t, i18n } = useTranslation('projects');
+    const FilteringComponent = useMemo(
+        () => ResourceFilterHOC(
+            getFilterConfig(), localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues(),
+        ),
+        [i18n.language],
+    );
     const {
         importing, query, onApplyFilter, onApplySorting, onApplySearch,
         selectedCount, onSelectAll,
@@ -69,7 +73,7 @@ function TopBarComponent(props: Readonly<Props>): JSX.Element {
                             }}
                             defaultValue={query.search ?? ''}
                             className='cvat-projects-page-search-bar'
-                            placeholder='Search ...'
+                            placeholder={t('Search ...')}
                         />
                         <ResourceSelectionInfo selectedCount={selectedCount} onSelectAll={onSelectAll} />
                     </div>
@@ -116,7 +120,7 @@ function TopBarComponent(props: Readonly<Props>): JSX.Element {
                                     onClick={(): void => history.push('/projects/create')}
                                     icon={<PlusOutlined />}
                                 >
-                                    Create a new project
+                                    {t('Create a new project')}
                                 </Button>
                                 <Button
                                     className='cvat-import-project-button'
@@ -125,7 +129,7 @@ function TopBarComponent(props: Readonly<Props>): JSX.Element {
                                     icon={importing ? <LoadingOutlined /> : <UploadOutlined />}
                                     onClick={() => dispatch(importActions.openImportBackupModal('project'))}
                                 >
-                                    Create from backup
+                                    {t('Create from backup')}
                                 </Button>
                             </div>
                         )}

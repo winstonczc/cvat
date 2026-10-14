@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Col, Row } from 'antd/lib/grid';
 import Input from 'antd/lib/input';
 
@@ -16,12 +17,8 @@ import {
 } from 'components/resource-sorting-filtering';
 import JobsCSVExportButton from './jobs-csv-export-button';
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues, getJobsFilterConfig,
 } from './jobs-filter-configuration';
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues,
-);
 
 interface Props {
     query: JobsQuery;
@@ -37,6 +34,11 @@ function TopBarComponent(props: Readonly<Props>): JSX.Element {
         query, onApplyFilter, onApplySorting, onApplySearch, selectedCount, onSelectAll,
     } = props;
     const [visibility, setVisibility] = useState(defaultVisibility);
+    const { t, i18n } = useTranslation('jobs');
+
+    const FilteringComponent = useMemo(() => ResourceFilterHOC(
+        getJobsFilterConfig(), localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues(),
+    ), [i18n.language]);
 
     return (
         <Row className='cvat-jobs-page-top-bar cvat-resource-top-bar-wrapper' justify='center' align='middle'>
@@ -50,7 +52,7 @@ function TopBarComponent(props: Readonly<Props>): JSX.Element {
                             }}
                             defaultValue={query.search ?? ''}
                             className='cvat-jobs-page-search-bar'
-                            placeholder='Search ...'
+                            placeholder={t('Search ...')}
                         />
                         <ResourceSelectionInfo selectedCount={selectedCount} onSelectAll={onSelectAll} />
                     </div>

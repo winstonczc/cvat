@@ -4,6 +4,7 @@
 
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import Dropdown from 'antd/lib/dropdown';
 import { MenuProps } from 'antd/lib/menu';
@@ -25,6 +26,7 @@ function RequestActionsComponent(props: Readonly<Props>): JSX.Element | null {
         dropdownTrigger,
     } = props;
     const dispatch = useDispatch();
+    const { t } = useTranslation('requests');
     const {
         selectedIds,
         requestsMap,
@@ -86,16 +88,20 @@ function RequestActionsComponent(props: Readonly<Props>): JSX.Element | null {
             async (request) => {
                 await dispatch(cancelRequestAsync(request));
             },
-            (request, idx, total) => `Canceling request #${request.id} (${idx + 1}/${total})`,
+            (request, idx, total) => t('Canceling request #{{id}} ({{index}}/{{total}})', {
+                id: request.id,
+                index: idx + 1,
+                total,
+            }),
         ));
-    }, [requestsToAct]);
+    }, [requestsToAct, t]);
 
     // Helper to show count in label for bulk actions
     const queuedCount = requestsToAct.filter(cancelable).length;
     const downloadableCount = requestsToAct.filter(downloadable).length;
     function withCount(label: string, count: number): React.ReactNode {
         if (count > 1) {
-            return `${label} (${count})`;
+            return t('{{label}} ({{count}})', { label, count });
         }
         return label;
     }
@@ -104,14 +110,14 @@ function RequestActionsComponent(props: Readonly<Props>): JSX.Element | null {
     if (downloadableCount > 0) {
         menuItems.push({
             key: 'download',
-            label: withCount('Download', downloadableCount),
+            label: withCount(t('Download'), downloadableCount),
             onClick: onDownload,
         });
     }
     if (queuedCount > 0) {
         menuItems.push({
             key: 'cancel',
-            label: withCount('Cancel', queuedCount),
+            label: withCount(t('Cancel'), queuedCount),
             onClick: onCancel,
         });
     }

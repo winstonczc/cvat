@@ -6,6 +6,7 @@ import React from 'react';
 import Modal from 'antd/lib/modal';
 
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import { CombinedState } from 'reducers';
 
@@ -15,6 +16,7 @@ import OrganizationSelector from 'components/selectors/organization-selector';
 
 function SelectOrganizationModal(): JSX.Element {
     const dispatch = useDispatch();
+    const { t } = useTranslation('organizations');
     const {
         visible,
         onSelectCallback,
@@ -25,7 +27,7 @@ function SelectOrganizationModal(): JSX.Element {
 
     return (
         <Modal
-            title='Select an organization'
+            title={t('Select an organization')}
             open={visible}
             footer={null}
             onCancel={() => dispatch(organizationActions.closeSelectOrganizationModal())}

@@ -3,34 +3,36 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface NameTemplateTooltipProps {
     example: string;
 }
 
 function NameTemplateTooltip({ example }: NameTemplateTooltipProps) {
+    const { t } = useTranslation('common');
     return (
         <>
-            You can use the template:
+            {t('You can use the template:')}
             <ul style={{ marginBottom: 0 }}>
                 <li>
                     <code>{'{{id}}'}</code>
                     <br />
-                    - resource id
+                    {t('- resource id')}
                 </li>
                 <li>
                     <code>{'{{name}}'}</code>
                     <br />
-                    - resource name
+                    {t('- resource name')}
                 </li>
                 <li>
                     <code>{'{{index}}'}</code>
                     <br />
-                    - index in selection
+                    {t('- index in selection')}
                 </li>
             </ul>
             <div>
-                Example:
+                {t('Example:')}
                 <br />
                 <i>{example}</i>
             </div>

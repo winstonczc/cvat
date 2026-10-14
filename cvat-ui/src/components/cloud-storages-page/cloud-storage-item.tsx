@@ -5,6 +5,7 @@
 
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import dayjs from 'dayjs';
 import { QuestionCircleOutlined, MoreOutlined } from '@ant-design/icons';
@@ -34,6 +35,7 @@ interface Props {
 export default function CloudStorageItemComponent(props: Readonly<Props>): JSX.Element {
     const history = useHistory();
     const dispatch = useDispatch();
+    const { t } = useTranslation('cloud-storages');
     const { itemRef, handleContextMenuClick, handleContextMenuCapture } = useContextMenuClick<HTMLDivElement>();
 
     const { cloudStorage, selected = false, onClick = () => {} } = props;
@@ -74,11 +76,11 @@ export default function CloudStorageItemComponent(props: Readonly<Props>): JSX.E
         const cloudStoragesToDelete = currentCloudStorages.filter((storage) => selectedIds.includes(storage.id));
         Modal.confirm({
             title: isBulkMode ?
-                `Delete ${cloudStoragesToDelete.length} selected cloud storages` :
-                'Please, confirm your action',
+                t('Delete {{count}} selected cloud storages', { count: cloudStoragesToDelete.length }) :
+                t('Please, confirm your action'),
             content: isBulkMode ?
-                'All selected cloud storages will be permanently removed. Continue?' :
-                `You are going to remove the cloudstorage "${displayName}". Continue?`,
+                t('All selected cloud storages will be permanently removed. Continue?') :
+                t('You are going to remove the cloudstorage "{{displayName}}". Continue?', { displayName }),
             className: 'cvat-modal-confirm-delete-cloud-storage',
             onOk: () => {
                 dispatch(makeBulkOperationAsync(
@@ -86,14 +88,18 @@ export default function CloudStorageItemComponent(props: Readonly<Props>): JSX.E
                     async (storage) => {
                         await dispatch(deleteCloudStorageAsync(storage));
                     },
-                    (storage, idx, total) => `Deleting cloud storage #${storage.id} (${idx + 1}/${total})`,
+                    (storage, idx, total) => t('Deleting cloud storage #{{id}} ({{current}}/{{total}})', {
+                        id: storage.id,
+                        current: idx + 1,
+                        total,
+                    }),
                 ));
             },
             okButtonProps: {
                 type: 'primary',
                 danger: true,
             },
-            okText: isBulkMode ? 'Delete selected' : 'Delete',
+            okText: isBulkMode ? t('Delete selected') : t('Delete'),
         });
     }, [cloudStorage, currentCloudStorages, selectedIds, isBulkMode, displayName]);
 
@@ -132,17 +138,17 @@ export default function CloudStorageItemComponent(props: Readonly<Props>): JSX.E
                 description={(
                     <>
                         <Paragraph>
-                            <Text type='secondary'>Provider: </Text>
+                            <Text type='secondary'>{t('Provider: ')}</Text>
                             <Text>{providerType}</Text>
                         </Paragraph>
                         <Paragraph>
-                            <Text type='secondary'>Created </Text>
-                            {owner ? <Text type='secondary'>{`by ${owner.username}`}</Text> : null}
-                            <Text type='secondary'> on </Text>
+                            <Text type='secondary'>{t('Created ')}</Text>
+                            {owner ? <Text type='secondary'>{t('by {{username}}', { username: owner.username })}</Text> : null}
+                            <Text type='secondary'>{t(' on ')}</Text>
                             <Text type='secondary'>{dayjs(createdDate).format('MMMM Do YYYY')}</Text>
                         </Paragraph>
                         <Paragraph>
-                            <Text type='secondary'>Last updated </Text>
+                            <Text type='secondary'>{t('Last updated ')}</Text>
                             <Text type='secondary'>{dayjs(updatedDate).fromNow()}</Text>
                         </Paragraph>
                         <Status cloudStorage={cloudStorage} />

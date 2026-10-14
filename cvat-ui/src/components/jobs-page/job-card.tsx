@@ -6,6 +6,7 @@
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import Card from 'antd/lib/card';
 import Descriptions from 'antd/lib/descriptions';
 import { MoreOutlined } from '@ant-design/icons';
@@ -36,6 +37,7 @@ function JobCardComponent(props: Readonly<Props>): JSX.Element {
     const {
         job, selected, onClick, onApplyFilter,
     } = props;
+    const { t } = useTranslation('jobs');
 
     const deletes = useSelector((state: CombinedState) => state.jobs.activities.deletes);
     const deleted = job.id in deletes ? deletes[job.id] === true : false;
@@ -63,11 +65,11 @@ function JobCardComponent(props: Readonly<Props>): JSX.Element {
 
     let tag = null;
     if (job.type === JobType.GROUND_TRUTH) {
-        tag = 'Ground truth';
+        tag = t('common::Ground truth');
     } else if (job.replicasCount > 0) {
-        tag = 'Parent';
+        tag = t('common::Parent');
     } else if (job.parentJobId !== null) {
-        tag = 'Replica';
+        tag = t('common::Replica');
     }
 
     const cardClassName = `cvat-job-page-list-item${selected ? ' cvat-item-selected' : ''}`;
@@ -89,7 +91,7 @@ function JobCardComponent(props: Readonly<Props>): JSX.Element {
                         previewClassName='cvat-jobs-page-job-item-card-preview'
                     />
                     <div className='cvat-job-page-list-item-id'>
-                        ID:
+                        {t('ID:')}
                         {` ${job.id}`}
                     </div>
                     {tag && <div className='cvat-job-page-list-item-type'>{tag}</div>}
@@ -104,11 +106,11 @@ function JobCardComponent(props: Readonly<Props>): JSX.Element {
             onContextMenuCapture={handleContextMenuCapture}
         >
             <Descriptions column={1} size='small'>
-                <Descriptions.Item label='Frames'>{job.stopFrame - job.startFrame + 1}</Descriptions.Item>
+                <Descriptions.Item label={t('Frames')}>{job.stopFrame - job.startFrame + 1}</Descriptions.Item>
                 {job.assignee ? (
-                    <Descriptions.Item label='Assignee'>{job.assignee.username}</Descriptions.Item>
+                    <Descriptions.Item label={t('Assignee')}>{job.assignee.username}</Descriptions.Item>
                 ) : (
-                    <Descriptions.Item label='Assignee'> </Descriptions.Item>
+                    <Descriptions.Item label={t('Assignee')}> </Descriptions.Item>
                 )}
             </Descriptions>
             <div

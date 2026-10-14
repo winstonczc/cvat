@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import Text from 'antd/lib/typography/Text';
 import Collapse from 'antd/lib/collapse';
 
@@ -111,6 +112,8 @@ function ObjectItemComponent(props: Props): JSX.Element {
         simplify,
         jobInstance,
     } = props;
+
+    const { t } = useTranslation('annotation');
 
     const type =
         objectType === ObjectType.TAG ?
@@ -239,7 +242,7 @@ function ObjectItemComponent(props: Props): JSX.Element {
                         className='cvat-objects-sidebar-state-item-elements-collapse'
                         items={[{
                             key: 'elements',
-                            label: <Text style={{ fontSize: 10 }} type='secondary'>PARTS</Text>,
+                            label: <Text style={{ fontSize: 10 }} type='secondary'>{t('PARTS')}</Text>,
                             children: elements.map((element: number) => (
                                 <ObjectItemElementComponent
                                     key={element}

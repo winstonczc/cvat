@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Col } from 'antd/lib/grid';
 import Icon, { StopOutlined, CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import Modal from 'antd/lib/modal';
@@ -81,6 +82,7 @@ function LeftGroup(props: Props): JSX.Element {
         onFinishDraw,
         onSwitchToolsBlockerState,
     } = props;
+    const { t } = useTranslation('annotation');
 
     const includesDoneButton = finishDrawAvailable(activeControl, rectDrawingMethod);
 
@@ -113,14 +115,14 @@ function LeftGroup(props: Props): JSX.Element {
                     closable={false}
                     footer={[]}
                 >
-                    <Text>CVAT is saving your annotations, please wait </Text>
+                    <Text>{t('CVAT is saving your annotations, please wait ')}</Text>
                     <LoadingOutlined />
                 </Modal>
             )}
             <Col className='cvat-annotation-header-left-group'>
                 <AnnotationMenuComponent />
                 <SaveAnnotationsButton />
-                <CVATTooltip overlay={`Undo: ${undoAction} ${undoShortcut}`}>
+                <CVATTooltip overlay={t('Undo: {{action}} {{shortcut}}', { action: undoAction, shortcut: undoShortcut })}>
                     <Button
                         style={{ pointerEvents: undoAction ? 'initial' : 'none', opacity: undoAction ? 1 : 0.5 }}
                         type='link'
@@ -128,10 +130,10 @@ function LeftGroup(props: Props): JSX.Element {
                         onClick={onUndoClick}
                     >
                         <Icon component={UndoIcon} />
-                        <span>Undo</span>
+                        <span>{t('Undo')}</span>
                     </Button>
                 </CVATTooltip>
-                <CVATTooltip overlay={`Redo: ${redoAction} ${redoShortcut}`}>
+                <CVATTooltip overlay={t('Redo: {{action}} {{shortcut}}', { action: redoAction, shortcut: redoShortcut })}>
                     <Button
                         style={{ pointerEvents: redoAction ? 'initial' : 'none', opacity: redoAction ? 1 : 0.5 }}
                         type='link'
@@ -139,19 +141,19 @@ function LeftGroup(props: Props): JSX.Element {
                         onClick={onRedoClick}
                     >
                         <Icon component={RedoIcon} />
-                        Redo
+                        {t('Redo')}
                     </Button>
                 </CVATTooltip>
                 {includesDoneButton ? (
-                    <CVATTooltip overlay={`Press "${drawShortcut}" to finish`}>
+                    <CVATTooltip overlay={t('Press "{{shortcut}}" to finish', { shortcut: drawShortcut })}>
                         <Button type='link' className='cvat-annotation-header-done-button cvat-annotation-header-button' onClick={onFinishDraw}>
                             <CheckCircleOutlined />
-                            Done
+                            {t('Done')}
                         </Button>
                     </CVATTooltip>
                 ) : null}
                 {includesToolsBlockerButton ? (
-                    <CVATTooltip overlay={`Press "${switchToolsBlockerShortcut}" to postpone running the algorithm `}>
+                    <CVATTooltip overlay={t('Press "{{shortcut}}" to postpone running the algorithm ', { shortcut: switchToolsBlockerShortcut })}>
                         <Button
                             type='link'
                             className={`cvat-annotation-header-block-tool-button cvat-annotation-header-button ${
@@ -160,7 +162,7 @@ function LeftGroup(props: Props): JSX.Element {
                             onClick={onSwitchToolsBlockerState}
                         >
                             <StopOutlined />
-                            Block
+                            {t('Block')}
                         </Button>
                     </CVATTooltip>
                 ) : null}

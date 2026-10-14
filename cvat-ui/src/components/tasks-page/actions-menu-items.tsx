@@ -5,6 +5,7 @@
 import React from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd/lib/menu';
+import i18n from 'i18next';
 import { usePlugins } from 'utils/hooks';
 import { LabelWithCountHOF } from 'components/common/label-with-count';
 import { CVATMenuEditLabel } from '../common/cvat-menu-edit-label';
@@ -62,14 +63,14 @@ export default function TaskActionsItems(menuItemsData: MenuItemsData, taskMenuP
     menuItems.push([{
         key: 'load_task_anno',
         onClick: onUploadAnnotations,
-        label: withCount('Upload annotations', 'load_task_anno'),
+        label: withCount(i18n.t('tasks::Upload annotations'), 'load_task_anno'),
         disabled: isDisabled('load_task_anno'),
     }, 0]);
 
     menuItems.push([{
         key: 'export_task_dataset',
         onClick: onExportDataset,
-        label: withCount('Export task dataset', 'export_task_dataset'),
+        label: withCount(i18n.t('tasks::Export task dataset'), 'export_task_dataset'),
         disabled: isExportDatasetDisabled || isDisabled('export_task_dataset'),
     }, 10]);
 
@@ -77,7 +78,7 @@ export default function TaskActionsItems(menuItemsData: MenuItemsData, taskMenuP
         menuItems.push([{
             key: 'open_bug_tracker',
             onClick: onOpenBugTracker,
-            label: withCount('Open bug tracker', 'open_bug_tracker'),
+            label: withCount(i18n.t('tasks::Open bug tracker'), 'open_bug_tracker'),
             disabled: isDisabled('open_bug_tracker'),
         }, 20]);
     }
@@ -86,39 +87,39 @@ export default function TaskActionsItems(menuItemsData: MenuItemsData, taskMenuP
         disabled: isAutomaticAnnotationEnabled || isDisabled('run_auto_annotation'),
         key: 'run_auto_annotation',
         onClick: onRunAutoAnnotation ?? undefined,
-        label: withCount('Automatic annotation', 'run_auto_annotation'),
+        label: withCount(i18n.t('tasks::Automatic annotation'), 'run_auto_annotation'),
     }, 30]);
 
     menuItems.push([{
         key: 'backup_task',
         onClick: onBackupTask,
-        label: withCount('Backup Task', 'backup_task'),
+        label: withCount(i18n.t('tasks::Backup Task'), 'backup_task'),
         disabled: isDisabled('backup_task'),
     }, 40]);
 
     menuItems.push([{
         key: 'edit_assignee',
         onClick: () => startEditField('assignee'),
-        label: <CVATMenuEditLabel>{withCount('Assignee', 'edit_assignee')}</CVATMenuEditLabel>,
+        label: <CVATMenuEditLabel>{withCount(i18n.t('tasks::Assignee'), 'edit_assignee')}</CVATMenuEditLabel>,
         disabled: isDisabled('edit_assignee'),
     }, 50]);
 
     menuItems.push([{
         key: 'view-analytics',
-        label: withCount('View analytics', 'view-analytics', `/tasks/${taskId}/analytics`),
+        label: withCount(i18n.t('tasks::View analytics'), 'view-analytics', `/tasks/${taskId}/analytics`),
         disabled: isDisabled('view-analytics'),
     }, 60]);
 
     menuItems.push([{
         key: 'quality_control',
-        label: withCount('Quality control', 'quality_control', `/tasks/${taskId}/quality-control`),
+        label: withCount(i18n.t('tasks::Quality control'), 'quality_control', `/tasks/${taskId}/quality-control`),
         disabled: isDisabled('quality_control') || isQualityControlDisabled,
     }, 70]);
 
     if (isConsensusEnabled) {
         menuItems.push([{
             key: 'consensus_management',
-            label: withCount('Consensus management', 'consensus_management', `/tasks/${taskId}/consensus`),
+            label: withCount(i18n.t('tasks::Consensus management'), 'consensus_management', `/tasks/${taskId}/consensus`),
             disabled: isDisabled('consensus_management'),
         }, 75]);
     }
@@ -127,7 +128,7 @@ export default function TaskActionsItems(menuItemsData: MenuItemsData, taskMenuP
         menuItems.push([{
             key: 'merge_consensus_jobs',
             onClick: onMergeConsensusJobs,
-            label: withCount('Merge consensus jobs', 'merge_consensus_jobs'),
+            label: withCount(i18n.t('tasks::Merge consensus jobs'), 'merge_consensus_jobs'),
             disabled: isMergingConsensusEnabled || isDisabled('merge_consensus_jobs'),
             itemIcon: isMergingConsensusEnabled ? <LoadingOutlined /> : undefined,
         }, 80]);
@@ -139,7 +140,7 @@ export default function TaskActionsItems(menuItemsData: MenuItemsData, taskMenuP
         menuItems.push([{
             key: 'move_task_to_project',
             onClick: onMoveTaskToProject,
-            label: withCount('Move to project', 'move_task_to_project'),
+            label: withCount(i18n.t('tasks::Move to project'), 'move_task_to_project'),
             disabled: isDisabled('move_task_to_project'),
         }, 90]);
 
@@ -148,7 +149,7 @@ export default function TaskActionsItems(menuItemsData: MenuItemsData, taskMenuP
             onClick: () => startEditField('organization'),
             label: (
                 <CVATMenuEditLabel>
-                    {withCount('Organization', 'edit_organization')}
+                    {withCount(i18n.t('tasks::Organization'), 'edit_organization')}
                 </CVATMenuEditLabel>
             ),
         }, 100]);
@@ -157,7 +158,7 @@ export default function TaskActionsItems(menuItemsData: MenuItemsData, taskMenuP
     menuItems.push([{
         key: 'delete_task',
         onClick: onDeleteTask,
-        label: withCount('Delete', 'delete_task'),
+        label: withCount(i18n.t('tasks::Delete'), 'delete_task'),
         disabled: isDisabled('delete_task'),
     }, 110]);
 
