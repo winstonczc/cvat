@@ -67,8 +67,9 @@ if os.environ.get("LLDAP_URI"):
 
     AUTH_LDAP_SERVER_URI = os.environ["LLDAP_URI"]
     ldap.set_option(ldap.OPT_REFERRALS, 0)
-    AUTH_LDAP_BIND_DN = os.environ.get("LLDAP_BIND_DN", f"uid=admin,ou=people,{_BASE_DN}")
-    AUTH_LDAP_BIND_PASSWORD = os.environ["LLDAP_ADMIN_PASSWORD"]  # 必须读环境变量，不能写成 "${VAR}" 字面量
+    # 绑定账号用专用只读账号 svc-bind（LLDAP 内置 lldap_strict_readonly 组），不用 admin
+    AUTH_LDAP_BIND_DN = os.environ.get("LLDAP_BIND_DN", f"uid=svc-bind,ou=people,{_BASE_DN}")
+    AUTH_LDAP_BIND_PASSWORD = os.environ["LLDAP_BIND_PASSWORD"]  # 必须读环境变量，不能写成 "${VAR}" 字面量
     AUTH_LDAP_USER_SEARCH = LDAPSearch(
         f"ou=people,{_BASE_DN}", ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
     )

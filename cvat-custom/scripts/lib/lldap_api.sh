@@ -5,8 +5,10 @@
 #
 # LLDAP HTTP / GraphQL 辅助函数库。
 #
-# 供 cvat-custom/scripts/init-lldap.sh 与 import-smcb-users.sh 通过 source 复用。
-# 只依赖 curl + jq，不依赖 python，也不依赖 LDAP 客户端（ldapadd/ldapmodify）。
+# 供 cvat-custom/scripts/init-lldap.sh 通过 source 复用。
+# （v1.2 职责缩减后普通用户不导入 LLDAP，原 import-smcb-users.sh 计划已取消。）
+# 依赖 curl；JSON 解析优先用 jq，宿主缺 jq 时自动生成 python3 兜底 shim
+#（见 lldap_require_tools）。不依赖 LDAP 客户端（ldapadd/ldapmodify）。
 #
 # 为什么走 HTTP/GraphQL 而不是 ldapadd：
 #   LLDAP 对标准 LDAP 的“写”操作支持是子集——它没有可写的自定义 OU，也不能用
@@ -32,16 +34,149 @@ LLDAP_HTTP_URL="${LLDAP_HTTP_URL:-http://127.0.0.1:17170}"
 LLDAP_ADMIN_USERNAME="${LLDAP_ADMIN_USERNAME:-admin}"
 
 # ---- 基础工具检查 -------------------------------------------------------------
-# 这两个脚本都依赖 curl（HTTP）与 jq（解析 GraphQL 响应），缺一不可。
+# 必需 curl（HTTP）。jq 缺失时用 python3 生成一个只支持本库所用调用形态的
+# jq shim（宿主 macOS 没有 jq，且 GitHub 不可达时装不了——与 verify-sso.sh
+# 对宿主缺工具的回退策略一致）。
 lldap_require_tools() {
-    local missing=0
-    for tool in curl jq; do
-        if ! command -v "${tool}" >/dev/null 2>&1; then
-            echo "❌ 缺少命令：${tool}。请先安装（macOS: brew install ${tool}；Debian/Ubuntu: apt install ${tool}）。" >&2
-            missing=1
+    if ! command -v curl >/dev/null 2>&1; then
+        echo "❌ 缺少命令：curl。请先安装。" >&2
+        return 1
+    fi
+    if ! command -v jq >/dev/null 2>&1; then
+        if ! command -v python3 >/dev/null 2>&1; then
+            echo "❌ 缺少命令：jq，且宿主也没有 python3 可兜底。请先安装 jq。" >&2
+            return 1
         fi
-    done
-    [[ "${missing}" -eq 0 ]]
+        lldap_install_jq_shim || return 1
+    fi
+    return 0
+}
+
+# 生成 python3 版 jq shim 并把它放到 PATH 最前。
+# shim 只支持本库用到的形态：
+#   jq -r '.token // empty' / '.errors // empty' / '.data.user.groups[]?.id' 等点路径过滤
+#   jq -c '.errors'
+#   jq -e '.data.user.id'
+#   jq -cn --arg k v --argjson k j '{模板}'（裸键、$var 引用）
+lldap_install_jq_shim() {
+    local shim_dir="${TMPDIR:-/tmp}/lldap-jq-shim"
+    local shim="${shim_dir}/jq"
+    mkdir -p "${shim_dir}"
+    cat > "${shim}" <<'PYEOF'
+#!/usr/bin/env python3
+"""jq 的极小子集 shim，仅供 cvat-custom/scripts/lib/lldap_api.sh 兜底使用。"""
+import json
+import re
+import sys
+
+
+def _emit(value, raw=False, compact=False):
+    if value is None:
+        print("null")
+    elif isinstance(value, str):
+        print(value if raw else json.dumps(value, ensure_ascii=False))
+    elif isinstance(value, bool):
+        print("true" if value else "false")
+    elif isinstance(value, (int, float)):
+        print(value)
+    else:
+        print(json.dumps(value, ensure_ascii=False,
+                         separators=((",", ":") if compact else (", ", ": "))))
+
+
+def main():
+    args = sys.argv[1:]
+    raw = compact = null_input = exit_status = False
+    variables = {}
+    positional = []
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a.startswith("--") and a in ("--arg", "--argjson"):
+            key, val = args[i + 1], args[i + 2]
+            variables[key] = val if a == "--arg" else json.loads(val)
+            i += 3
+            continue
+        if a.startswith("-") and not a.startswith("--"):
+            for ch in a[1:]:
+                if ch == "r":
+                    raw = True
+                elif ch == "c":
+                    compact = True
+                elif ch == "n":
+                    null_input = True
+                elif ch == "e":
+                    exit_status = True
+                else:
+                    sys.stderr.write(f"jq-shim: unsupported flag -{ch}\n")
+                    sys.exit(2)
+            i += 1
+            continue
+        positional.append(a)
+        i += 1
+
+    if not positional:
+        sys.stderr.write("jq-shim: missing filter\n")
+        sys.exit(2)
+    filt = positional[0]
+
+    if null_input:
+        # 构造模式：裸键加引号，再替换 $var（单次替换，值里的 $ 不会被二次扫描）。
+        tmpl = re.sub(r'([{,])\s*([A-Za-z_][A-Za-z0-9_]*)\s*:', r'\1"\2":', filt)
+        out = re.sub(
+            r'\$([A-Za-z_][A-Za-z0-9_]*)',
+            lambda m: json.dumps(variables.get(m.group(1)),
+                                 ensure_ascii=False, separators=(",", ":")),
+            tmpl,
+        )
+        print(json.dumps(json.loads(out), ensure_ascii=False, separators=(",", ":")))
+        return
+
+    data = json.load(sys.stdin)
+    result = None
+    has_output = True
+
+    if filt == ".token // empty":
+        v = data.get("token")
+        if isinstance(v, str) and v:
+            print(v)
+        return
+    if filt == ".errors // empty":
+        errs = data.get("errors")
+        if errs:
+            _emit(errs, raw=raw, compact=True)
+        return
+    if filt == ".errors":
+        result = data.get("errors")
+    elif filt == '.data.groups[]? | "\\(.id)\\t\\(.displayName)"':
+        for g in (data.get("data") or {}).get("groups") or []:
+            print(f"{g.get('id')}\t{g.get('displayName')}")
+        return
+    elif filt == ".data.user.id":
+        user = (data.get("data") or {}).get("user")
+        result = user.get("id") if isinstance(user, dict) else None
+    elif filt == ".data.user.groups[]?.id":
+        user = (data.get("data") or {}).get("user")
+        for g in (user or {}).get("groups") or []:
+            print(g.get("id"))
+        return
+    elif filt == ".data.createGroup.id":
+        result = (data.get("data") or {}).get("createGroup", {}).get("id")
+    else:
+        sys.stderr.write(f"jq-shim: unsupported filter: {filt}\n")
+        sys.exit(2)
+
+    if has_output:
+        _emit(result, raw=raw, compact=compact)
+    if exit_status and not result:
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
+PYEOF
+    chmod +x "${shim}"
+    export PATH="${shim_dir}:${PATH}"
 }
 
 # ---- 登录：用管理员账号换 JWT --------------------------------------------------
@@ -80,7 +215,10 @@ EOF
 # 把响应原样打印到 stdout；HTTP 失败返回非零。
 lldap_gql() {
     local query="$1"
-    local variables="${2:-{}}"
+    # 注意：不能写成 "${2:-{}}"——bash 的参数展开不做花括号嵌套配对，
+    # 遇到第一个 } 就结束，会在 $2 非空时多出一个字面量 }。
+    local variables="${2:-}"
+    [[ -n "${variables}" ]] || variables='{}'
 
     # 组装请求体。query/variables 不是敏感数据，走 jq 的 argv 无妨；
     # 真正的请求体仍通过 stdin 交给 curl，避免出现在 curl 的 argv 中。
@@ -219,8 +357,12 @@ lldap_set_password() {
         return $?
     fi
 
-    if command -v lldap_set_password >/dev/null 2>&1; then
-        LLDAP_USER_PASSWORD="${password}" lldap_set_password \
+    # 注意：必须用 type -P（只在 PATH 里找可执行文件），不能用 command -v——
+    # 后者会先命中本函数自身，导致无限递归（栈溢出，exit 139）。
+    local host_bin
+    host_bin="$(type -P lldap_set_password || true)"
+    if [[ -n "${host_bin}" ]]; then
+        LLDAP_USER_PASSWORD="${password}" "${host_bin}" \
             --base-url "${LLDAP_HTTP_URL}" --token "${LLDAP_TOKEN}" --username "${uid}"
         return $?
     fi

@@ -27,11 +27,13 @@ services:
       PLATFORM_SSO_PUBLIC_KEY_PATH: /opt/cvat/keys/cvat_sso_public.pem
       PLATFORM_SSO_ISSUER: ${PLATFORM_ORIGIN:-http://localhost:5173}
       PLATFORM_SSO_AUDIENCE: cvat
-      # LDAP：留空则 CVAT 保持 BASIC 认证（本地验证 SSO 时不需要 LLDAP）
+      # LDAP：留空则 CVAT 保持 BASIC 认证（本地验证 SSO 时不需要 LLDAP）。
+      # 绑定账号为只读 svc-bind，口令走 LLDAP_BIND_PASSWORD（注意：不是
+      # LLDAP_ADMIN_PASSWORD——admin 口令只属于 LLDAP 自身，不应进入 CVAT 容器）。
       LLDAP_URI: ${LLDAP_URI:-}
       LLDAP_BASE_DN: ${LLDAP_BASE_DN:-dc=drone-platform,dc=com}
       LLDAP_BIND_DN: ${LLDAP_BIND_DN:-}
-      LLDAP_ADMIN_PASSWORD: ${LLDAP_ADMIN_PASSWORD:-}
+      LLDAP_BIND_PASSWORD: ${LLDAP_BIND_PASSWORD:-}
     volumes:
       - ./cvat-custom/settings.py:/opt/cvat/settings.py:ro
       - ./cvat-custom/platform_sso:/opt/cvat/platform_sso:ro
