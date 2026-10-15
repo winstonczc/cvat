@@ -1,0 +1,44 @@
+# =============================================================================
+# CVAT 平台集成 override（叠加在仓库根的 docker-compose.yml 之上）
+#
+# 用法（在仓库根目录执行）：
+#   docker compose -f docker-compose.yml -f cvat-custom/docker-compose.platform.yml up -d
+#
+# 首次需要先准备密钥对：
+#   bash cvat-custom/scripts/gen-keys.sh
+#
+# 说明：
+#   - cvat_server 挂载自定义 settings.py / platform_sso / nginx.conf，
+#     并把 PLATFORM_ORIGIN、CVAT_ORIGIN、Cookie 及 SSO 相关变量注入环境。
+#   - ⚠️ 只挂载**公钥**（/opt/cvat/keys/cvat_sso_public.pem）。私钥属于平台侧，
+#     绝不可以进入 CVAT 容器。
+#   - cvat_ui 挂载自定义 react_nginx.conf，允许平台页面 iframe 嵌入 CVAT UI。
+#   - LDAP 段留空时 CVAT 保持 BASIC 认证（本地验证 SSO 时不需要 LLDAP）。
+# =============================================================================
+
+services:
+  cvat_server:
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      PLATFORM_ORIGIN: ${PLATFORM_ORIGIN:-http://localhost:5173}
+      CVAT_ORIGIN: ${CVAT_ORIGIN:-http://localhost:7000}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      PLATFORM_SSO_PUBLIC_KEY_PATH: /opt/cvat/keys/cvat_sso_public.pem
+      PLATFORM_SSO_ISSUER: ${PLATFORM_ORIGIN:-http://localhost:5173}
+      PLATFORM_SSO_AUDIENCE: cvat
+      # LDAP：留空则 CVAT 保持 BASIC 认证（本地验证 SSO 时不需要 LLDAP）
+      LLDAP_URI: ${LLDAP_URI:-}
+      LLDAP_BASE_DN: ${LLDAP_BASE_DN:-dc=drone-platform,dc=com}
+      LLDAP_BIND_DN: ${LLDAP_BIND_DN:-}
+      LLDAP_ADMIN_PASSWORD: ${LLDAP_ADMIN_PASSWORD:-}
+    volumes:
+      - ./cvat-custom/settings.py:/opt/cvat/settings.py:ro
+      - ./cvat-custom/platform_sso:/opt/cvat/platform_sso:ro
+      - ./cvat-custom/nginx.conf:/etc/nginx/nginx.conf:ro
+      # 只挂公钥：私钥留在平台侧，绝不进 CVAT 容器
+      - ./cvat-custom/keys/cvat_sso_public.pem:/opt/cvat/keys/cvat_sso_public.pem:ro
+
+  cvat_ui:
+    volumes:
+      - ./cvat-custom/react_nginx.conf:/etc/nginx/conf.d/default.conf:ro
