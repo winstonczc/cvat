@@ -1,0 +1,81 @@
+# =============================================================================
+# LLDAP 服务编排（CVAT 的 LDAP 目录 / 平台统一身份来源）
+#
+# 用法（在仓库根目录执行，必须与基础 compose 叠加，才能加入 `cvat` 网络）：
+#   docker compose \
+#     -f docker-compose.yml \
+#     -f docker-compose.override.yml \
+#     -f cvat-custom/docker-compose.platform.yml \
+#     -f cvat-custom/ldap/docker-compose.lldap.yml \
+#     up -d
+#
+# 启动后 cvat_server 可通过 http://lldap:3890 访问 LDAP（见 settings.py 的
+# LLDAP_URI），宿主可通过 http://127.0.0.1:17170 访问 LLDAP 管理 API。
+#
+# ⚠️ 安全约定（本仓库有硬编码密钥的黑历史，这里必须守住）：
+#   - 口令 / JWT 密钥一律通过环境变量注入，**绝不写进本文件**；
+#     变量缺省时 `${VAR:?msg}` 会让 compose 直接报错退出，而不是静默用空口令。
+#   - LDAP / HTTP 端口只绑到 127.0.0.1，不对公网暴露；生产环境请用 VPN / 反代。
+#   - 数据卷持久化在命名卷 lldap_data 中（容器内 /data）。
+#   - 变量清单见 cvat-custom/.env.example 的「LLDAP」段落。
+# =============================================================================
+
+services:
+  lldap:
+    # 固定到具体版本，不用 latest / stable（避免升级时行为漂移）。
+    # 说明：官方镜像历史上叫 nitnelave/lldap，现更名为 lldap/lldap，
+    # 两个仓库名都在持续发布同一镜像；这里用新名 lldap/lldap。
+    image: lldap/lldap:${LLDAP_VERSION:-v0.6.3}
+    container_name: lldap
+    restart: unless-stopped
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      # 容器内进程的 UID/GID（默认 1000:1000）；如遇 /data 权限问题再调整。
+      UID: ${LLDAP_UID:-1000}
+      GID: ${LLDAP_GID:-1000}
+      # 基础 DN。必须与 settings.py 的 LLDAP_BASE_DN 保持一致。
+      LLDAP_LDAP_BASE_DN: ${LLDAP_BASE_DN:-dc=drone-platform,dc=com}
+      # 管理员（绑定）账号的用户名与口令。
+      # LLDAP 配置项名为 ldap_user_dn（值只是用户名，不是完整 DN）。
+      # 默认 admin；settings.py 的默认绑定 DN 是 uid=admin,ou=people,<base>。
+      LLDAP_LDAP_USER_DN: ${LLDAP_ADMIN_USERNAME:-admin}
+      LLDAP_LDAP_USER_PASS: ${LLDAP_ADMIN_PASSWORD:?请在 .env 中设置 LLDAP_ADMIN_PASSWORD}
+      LLDAP_LDAP_USER_EMAIL: ${LLDAP_ADMIN_EMAIL:-admin@drone-platform.com}
+      # JWT 签名密钥（用于 Web 管理界面会话），必须是强随机值。
+      LLDAP_JWT_SECRET: ${LLDAP_JWT_SECRET:?请在 .env 中设置 LLDAP_JWT_SECRET（强随机值）}
+      # 对外 HTTP 地址，用于密码重置邮件里的链接；本地可留默认。
+      LLDAP_HTTP_URL: ${LLDAP_HTTP_URL:-http://127.0.0.1:17170}
+
+      # ---- LDAPS（TLS）-----------------------------------------------------
+      # 需求要求生产使用 TLS。LLDAP 的 TLS 方案尚未拍板（证书来源 / 前置反代），
+      # 因此这里**只保留注释**，不启用自签证书。
+      # 决定后取消下面注释，并在宿主机准备证书文件后按需挂载：
+      #   LLDAP_LDAPS_OPTIONS__ENABLED: "true"
+      #   LLDAP_LDAPS_OPTIONS__CERT_FILE: /data/certs/lldap.crt
+      #   LLDAP_LDAPS_OPTIONS__KEY_FILE: /data/certs/lldap.key
+      # 同时在 volumes 中把证书目录挂进容器，并放开 6360 端口。
+
+    ports:
+      # 只绑回环地址：LDAP 3890 与 Web/GraphQL 17170 均不对公网暴露。
+      - "127.0.0.1:${LLDAP_LDAP_PORT:-3890}:3890"
+      - "127.0.0.1:${LLDAP_HTTP_PORT:-17170}:17170"
+      # LDAPS（启用上面 LDAPS 配置后再放开）：
+      # - "127.0.0.1:${LLDAP_LDAPS_PORT:-6360}:6360"
+
+    volumes:
+      - lldap_data:/data
+
+    networks:
+      cvat:
+        # cvat_server 通过该别名访问：ldap://lldap:3890
+        aliases:
+          - lldap
+
+volumes:
+  lldap_data:
+    driver: local
+
+networks:
+  # 复用基础 compose 已声明的网络，不重复定义。
+  cvat:
