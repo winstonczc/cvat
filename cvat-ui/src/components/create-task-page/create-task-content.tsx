@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { RefObject } from 'react';
+import i18n from 'i18next';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import { Row, Col } from 'antd/lib/grid';
@@ -98,15 +99,21 @@ const defaultState: State = {
     statusInProgressTask: '',
 };
 
-const UploadFileErrorMessages = {
-    one: 'Wrong list of files. You can upload an archive with images, a video, a pdf file or multiple images. ',
-    multi: 'Wrong list of files. You can upload one or more videos. ',
-};
+// the messages are user-visible, so they are evaluated lazily
+// to react to language switching
+function getUploadFileErrorMessages(): { one: string; multi: string } {
+    return {
+        one: i18n.t('tasks::Wrong list of files. You can upload an archive with images, a video, a pdf file or multiple images. '),
+        multi: i18n.t('tasks::Wrong list of files. You can upload one or more videos. '),
+    };
+}
 
-const UploadFileHints = {
-    one: 'You can upload an archive with images, a video, or multiple images',
-    multi: 'You can upload one or more videos',
-};
+function getUploadFileHints(): { one: string; multi: string } {
+    return {
+        one: i18n.t('tasks::You can upload an archive with images, a video, or multiple images'),
+        multi: i18n.t('tasks::You can upload one or more videos'),
+    };
+}
 
 function receiveExtensions(files: RemoteFile[]): string[] {
     const fileTypes = files.filter((file: RemoteFile) => file.name.includes('.'))
@@ -121,7 +128,9 @@ function checkFiles(files: RemoteFile[], type: SupportedShareTypes, baseError: s
     if (erroredFiles.length !== 0) {
         const unsupportedTypes = receiveExtensions(erroredFiles);
         const extensionList = Array.from(new Set(unsupportedTypes));
-        return extensionList.length ? `${baseError} Found unsupported types: ${extensionList.join(', ')}. ` : baseError;
+        return extensionList.length ?
+            `${baseError}${i18n.t('tasks:: Found unsupported types: {{types}}. ', { types: extensionList.join(', ') })}` :
+            baseError;
     }
     return '';
 }
@@ -134,13 +143,13 @@ function validateRemoteFiles(remoteFiles: RemoteFile[], many: boolean): string {
         uploadFileErrorMessage = checkFiles(
             excludedManifests,
             SupportedShareTypes.IMAGE,
-            UploadFileErrorMessages.one,
+            getUploadFileErrorMessages().one,
         );
     } else if (many) {
         uploadFileErrorMessage = checkFiles(
             regFiles,
             SupportedShareTypes.VIDEO,
-            UploadFileErrorMessages.multi,
+            getUploadFileErrorMessages().multi,
         );
     }
     return uploadFileErrorMessage;
@@ -328,11 +337,11 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
         if (!many && excludedManifests.length > 1) {
             uploadFileErrorMessage = excludedManifests.every((it) => (
                 getFileContentType(it) === SupportedShareTypes.IMAGE
-            )) ? '' : UploadFileErrorMessages.one;
+            )) ? '' : getUploadFileErrorMessages().one;
         } else if (many) {
             uploadFileErrorMessage = excludedManifests.every(
                 (it) => getFileContentType(it) === SupportedShareTypes.VIDEO,
-            ) ? '' : UploadFileErrorMessages.multi;
+            ) ? '' : getUploadFileErrorMessages().multi;
         }
 
         this.setState({
@@ -363,7 +372,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                 while (index < length) {
                     const isImageFile = getContentTypeRemoteFile(urls[index]) === 'image';
                     if (!isImageFile) {
-                        uploadFileErrorMessage = UploadFileErrorMessages.one;
+                        uploadFileErrorMessage = getUploadFileErrorMessages().one;
                         break;
                     }
                     index++;
@@ -373,14 +382,14 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                 while (index < length) {
                     const isVideoFile = getContentTypeRemoteFile(urls[index]) === 'video';
                     if (!isVideoFile) {
-                        uploadFileErrorMessage = UploadFileErrorMessages.multi;
+                        uploadFileErrorMessage = getUploadFileErrorMessages().multi;
                         break;
                     }
                     index++;
                 }
             }
         } catch (err) {
-            uploadFileErrorMessage = `We can't process it. ${err}`;
+            uploadFileErrorMessage = i18n.t('tasks::We can\'t process it. {{error}}', { error: `${err}` });
         }
 
         this.setState({
@@ -436,8 +445,8 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
 
         if (!this.validateFiles()) {
             notification.error({
-                message: 'Could not create a task',
-                description: 'A task must contain at least one file',
+                message: i18n.t('tasks::Could not create a task'),
+                description: i18n.t('tasks::A task must contain at least one file'),
                 className: 'cvat-notification-create-task-fail',
             });
             reject();
@@ -477,9 +486,8 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                             }, () => {
                                 _resolve();
                                 notification.info({
-                                    message: 'Task parameters were automatically updated',
-                                    description: 'Sorting method has been updated as Honeypots' +
-                                        ' quality method only supports RANDOM sorting',
+                                    message: i18n.t('tasks::Task parameters were automatically updated'),
+                                    description: i18n.t('tasks::Sorting method has been updated as Honeypots quality method only supports RANDOM sorting'),
                                 });
                             });
                         } else {
@@ -504,7 +512,10 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                             ) : advanced.targetStorage,
                         });
                     }).catch((error: Error): void => {
-                        throw new Error(`Couldn't fetch the project ${projectId} ${error.toString()}`);
+                        throw new Error(i18n.t('tasks::Couldn\'t fetch the project {{projectId}} {{error}}', {
+                            projectId,
+                            error: error.toString(),
+                        }));
                     });
                 }
 
@@ -512,7 +523,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
             }).then(resolve)
             .catch((error: Error | ValidateErrorEntity): void => {
                 notification.error({
-                    message: 'Could not create a task',
+                    message: i18n.t('tasks::Could not create a task'),
                     description: formFieldsError(error).map((text: string): JSX.Element => <div>{text}</div>),
                     className: 'cvat-notification-create-task-fail',
                 });
@@ -537,7 +548,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
             .then(this.createOneTask)
             .then(() => {
                 notification.info({
-                    message: 'The task has been created',
+                    message: i18n.t('tasks::The task has been created'),
                     className: 'cvat-notification-create-task-success',
                 });
             })
@@ -656,11 +667,19 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                 const countAll = multiTasks.length;
 
                 notification.info({
-                    message: 'The tasks have been created',
-                    description:
-                        `Completed: ${countCompleted}, failed: ${countFailed},${countCancelled ?
-                            ` cancelled: ${countCancelled},` :
-                            ''} total: ${countAll}, `,
+                    message: i18n.t('tasks::The tasks have been created'),
+                    description: countCancelled ?
+                        i18n.t('tasks::Completed: {{completed}}, failed: {{failed}}, cancelled: {{cancelled}}, total: {{total}}, ', {
+                            completed: countCompleted,
+                            failed: countFailed,
+                            cancelled: countCancelled,
+                            total: countAll,
+                        }) :
+                        i18n.t('tasks::Completed: {{completed}}, failed: {{failed}}, total: {{total}}, ', {
+                            completed: countCompleted,
+                            failed: countFailed,
+                            total: countAll,
+                        }),
                     className: 'cvat-notification-create-task-success',
                 });
             });
@@ -683,7 +702,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
             multiTasks: newMultiTasks,
         }, () => {
             notification.info({
-                message: `Creation of ${count} tasks have been canceled`,
+                message: i18n.t('tasks::Creation of {{count}} tasks have been canceled', { count }),
                 className: 'cvat-notification-create-task-success',
             });
         });
@@ -789,7 +808,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
         return (
             <>
                 <Col span={24}>
-                    <Text className='cvat-text-color'>Project</Text>
+                    <Text className='cvat-text-color'>{i18n.t('tasks::Project')}</Text>
                 </Col>
                 <Col span={24}>
                     <ProjectSearchField onSelect={this.handleProjectIdChange} value={projectId} />
@@ -805,7 +824,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
             return (
                 <>
                     <Col span={24}>
-                        <Text className='cvat-text-color'>Subset</Text>
+                        <Text className='cvat-text-color'>{i18n.t('tasks::Subset')}</Text>
                     </Col>
                     <Col span={24}>
                         <ProjectSubsetField
@@ -829,10 +848,10 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
             return (
                 <>
                     <Col span={24}>
-                        <Text className='cvat-text-color'>Labels</Text>
+                        <Text className='cvat-text-color'>{i18n.t('tasks::Labels')}</Text>
                     </Col>
                     <Col span={24}>
-                        <Text type='secondary'>Project labels will be used</Text>
+                        <Text type='secondary'>{i18n.t('tasks::Project labels will be used')}</Text>
                     </Col>
                 </>
             );
@@ -840,7 +859,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
 
         return (
             <Col span={24}>
-                <Text className='cvat-text-color'>Labels</Text>
+                <Text className='cvat-text-color'>{i18n.t('tasks::Labels')}</Text>
                 <LabelsEditor
                     labels={labels}
                     onSubmit={(newLabels): void => {
@@ -861,9 +880,9 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
             <>
                 <Col span={24}>
                     <Text type='danger'>* </Text>
-                    <Text className='cvat-text-color'>Select files</Text>
+                    <Text className='cvat-text-color'>{i18n.t('tasks::Select files')}</Text>
                     <FileManagerComponent
-                        localFilesHint={many ? UploadFileHints.multi : UploadFileHints.one}
+                        localFilesHint={many ? getUploadFileHints().multi : getUploadFileHints().one}
                         onChangeActiveKey={this.changeFileManagerTab}
                         onUploadLocalFiles={this.handleUploadLocalFiles}
                         onUploadRemoteFiles={this.handleUploadRemoteFiles}
@@ -906,7 +925,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                     className='cvat-advanced-configuration-wrapper'
                     items={[{
                         key: '1',
-                        label: <Text className='cvat-title'>Advanced configuration</Text>,
+                        label: <Text className='cvat-title'>{i18n.t('tasks::Advanced configuration')}</Text>,
                         children: (
                             <AdvancedConfigurationForm
                                 activeFileManagerTab={activeFileManagerTab}
@@ -943,7 +962,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                     className='cvat-quality-configuration-wrapper'
                     items={[{
                         key: '1',
-                        label: <Text className='cvat-title'>Quality</Text>,
+                        label: <Text className='cvat-title'>{i18n.t('tasks::Quality')}</Text>,
                         children: (
                             <QualityConfigurationForm
                                 ref={this.qualityConfigurationComponent}
@@ -976,7 +995,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                         onClick={this.handleSubmitAndOpen}
                         disabled={!!uploadFileErrorMessage}
                     >
-                        Submit & Open
+                        {i18n.t('tasks::Submit & Open')}
                     </Button>
                 </Col>
                 <Col>
@@ -986,7 +1005,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                         onClick={this.handleSubmitAndContinue}
                         disabled={!!uploadFileErrorMessage}
                     >
-                        Submit & Continue
+                        {i18n.t('tasks::Submit & Continue')}
                     </Button>
                 </Col>
             </Row>
@@ -1027,9 +1046,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
                         onClick={this.handleSubmitMultiTasks}
                         disabled={!!uploadFileErrorMessage}
                     >
-                        Submit&nbsp;
-                        {currentFiles.length}
-                        &nbsp;tasks
+                        {i18n.t('tasks::Submit {{count}} tasks', { count: currentFiles.length })}
                     </Button>
                 </Col>
             </Row>
@@ -1042,7 +1059,7 @@ class CreateTaskContent extends React.PureComponent<Props & RouteComponentProps,
         return (
             <Row justify='start' align='middle' className='cvat-create-task-content'>
                 <Col span={24}>
-                    <Text className='cvat-title'>Basic configuration</Text>
+                    <Text className='cvat-title'>{i18n.t('tasks::Basic configuration')}</Text>
                 </Col>
 
                 {this.renderBasicBlock()}

@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import { PlusOutlined } from '@ant-design/icons';
 import Button from 'antd/lib/button';
@@ -17,12 +18,8 @@ import {
 import { WebhooksQuery } from 'reducers';
 import dimensions from 'utils/dimensions';
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getWebhooksFilterConfig,
 } from './webhooks-filter-configuration';
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity,
-);
 
 interface VisibleTopBarProps {
     onApplyFilter(filter: string | null): void;
@@ -40,6 +37,11 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
         query, onApplyFilter, onApplySorting, onApplySearch, onCreateWebhook, goBackContent, selectedCount, onSelectAll,
     } = props;
     const [visibility, setVisibility] = useState(defaultVisibility);
+    const { t, i18n } = useTranslation('webhooks');
+
+    const FilteringComponent = useMemo(() => ResourceFilterHOC(
+        getWebhooksFilterConfig(), localStorageRecentKeyword, localStorageRecentCapacity,
+    ), [i18n.language]);
 
     return (
         <>
@@ -59,7 +61,7 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
                                 }}
                                 defaultValue={query.search ?? ''}
                                 className='cvat-webhooks-page-search-bar'
-                                placeholder='Search ...'
+                                placeholder={t('Search ...')}
                             />
                             <ResourceSelectionInfo selectedCount={selectedCount} onSelectAll={onSelectAll} />
                         </div>

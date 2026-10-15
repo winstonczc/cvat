@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import dayjs from 'dayjs';
 import Text from 'antd/lib/typography/Text';
@@ -33,6 +34,7 @@ function MemberItem(props: Readonly<Props>): JSX.Element {
         user, joinedDate, role, invitation,
     } = membershipInstance;
     const { username, firstName, lastName } = user;
+    const { t } = useTranslation('organizations');
 
     const dispatch = useDispatch();
     const {
@@ -69,7 +71,9 @@ function MemberItem(props: Readonly<Props>): JSX.Element {
             async (m) => {
                 await dispatch(updateOrganizationMemberAsync(organizationInstance, m, newRole));
             },
-            (m, idx, total) => `Updating role for ${m.user.username} (${idx + 1}/${total})`,
+            (m, idx, total) => t('Updating role for {{username}} ({{index}}/{{total}})', {
+                username: m.user.username, index: idx + 1, total,
+            }),
             fetchMembers,
         ));
     };
@@ -92,11 +96,13 @@ function MemberItem(props: Readonly<Props>): JSX.Element {
             <Col span={8} className='cvat-organization-member-item-dates'>
                 {invitation ? (
                     <Text type='secondary'>
-                        {`Invited ${dayjs(invitation.createdDate).fromNow()}`}
-                        {invitation.owner && ` by ${invitation.owner.username}`}
+                        {t('Invited {{time}}', { time: dayjs(invitation.createdDate).fromNow() })}
+                        {invitation.owner && ` ${t('by {{username}}', { username: invitation.owner.username })}`}
                     </Text>
                 ) : null}
-                {joinedDate ? <Text type='secondary'>{`Joined ${dayjs(joinedDate).fromNow()}`}</Text> : <Text type='secondary'>Invitation pending</Text>}
+                {joinedDate ? (
+                    <Text type='secondary'>{t('Joined {{time}}', { time: dayjs(joinedDate).fromNow() })}</Text>
+                ) : <Text type='secondary'>{t('Invitation pending')}</Text>}
             </Col>
             <Col span={3} className='cvat-organization-member-item-role'>
                 <MemberRoleSelector

@@ -4,6 +4,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import dayjs from 'dayjs';
 
 import { Row, Col } from 'antd/lib/grid';
@@ -55,19 +57,20 @@ function constructName(operation: Request['operation']): string | null {
     } = operation;
 
     if (target === 'project' && projectID) {
-        return `Project #${projectID}`;
+        return i18n.t('common::Project #{{id}}', { id: projectID });
     }
     if (target === 'task' && taskID) {
-        return `Task #${taskID}`;
+        return i18n.t('common::Task #{{id}}', { id: taskID });
     }
     if (target === 'job' && jobID) {
-        return `Job #${jobID}`;
+        return i18n.t('common::Job #{{id}}', { id: jobID });
     }
     return null;
 }
 
 function constructTypeText(type: string): string {
-    return type.split(':').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const fallback = type.split(':').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    return i18n.t(`requests::${fallback}`, { defaultValue: fallback });
 }
 
 function renderEllipsisText(text: string, type?: BaseType): JSX.Element {
@@ -92,10 +95,13 @@ function constructTimestamps(request: Request): JSX.Element {
                 return (
                     <>
                         <Row>
-                            {renderEllipsisText(`Started by ${request.owner.username} on ${started}`, 'secondary')}
+                            {renderEllipsisText(i18n.t('requests::Started by {{username}} on {{date}}', {
+                                username: request.owner.username,
+                                date: started,
+                            }), 'secondary')}
                         </Row>
                         <Row>
-                            <Text type='secondary'>{`Expires on ${expired}`}</Text>
+                            <Text type='secondary'>{i18n.t('requests::Expires on {{date}}', { date: expired })}</Text>
                         </Row>
                     </>
                 );
@@ -103,10 +109,13 @@ function constructTimestamps(request: Request): JSX.Element {
             return (
                 <>
                     <Row>
-                        {renderEllipsisText(`Started by ${request.owner.username} on ${started}`, 'secondary')}
+                        {renderEllipsisText(i18n.t('requests::Started by {{username}} on {{date}}', {
+                            username: request.owner.username,
+                            date: started,
+                        }), 'secondary')}
                     </Row>
                     <Row>
-                        <Text type='secondary'>{`Finished on ${finished}`}</Text>
+                        <Text type='secondary'>{i18n.t('requests::Finished on {{date}}', { date: finished })}</Text>
                     </Row>
                 </>
             );
@@ -114,11 +123,17 @@ function constructTimestamps(request: Request): JSX.Element {
         case RQStatus.FAILED: {
             return (request.startedDate ? (
                 <Row>
-                    {renderEllipsisText(`Started by ${request.owner.username} on ${started}`, 'secondary')}
+                    {renderEllipsisText(i18n.t('requests::Started by {{username}} on {{date}}', {
+                        username: request.owner.username,
+                        date: started,
+                    }), 'secondary')}
                 </Row>
             ) : (
                 <Row>
-                    {renderEllipsisText(`Enqueued by ${request.owner.username} on ${created}`, 'secondary')}
+                    {renderEllipsisText(i18n.t('requests::Enqueued by {{username}} on {{date}}', {
+                        username: request.owner.username,
+                        date: created,
+                    }), 'secondary')}
                 </Row>
             ));
         }
@@ -126,10 +141,13 @@ function constructTimestamps(request: Request): JSX.Element {
             return (
                 <>
                     <Row>
-                        {renderEllipsisText(`Enqueued by ${request.owner.username} on ${created}`, 'secondary')}
+                        {renderEllipsisText(i18n.t('requests::Enqueued by {{username}} on {{date}}', {
+                            username: request.owner.username,
+                            date: created,
+                        }), 'secondary')}
                     </Row>
                     <Row>
-                        <Text type='secondary'>{`Started on ${started}`}</Text>
+                        <Text type='secondary'>{i18n.t('requests::Started on {{date}}', { date: started })}</Text>
                     </Row>
                 </>
             );
@@ -137,7 +155,10 @@ function constructTimestamps(request: Request): JSX.Element {
         default: {
             return (
                 <Row>
-                    {renderEllipsisText(`Enqueued by ${request.owner.username} on ${created}`, 'secondary')}
+                    {renderEllipsisText(i18n.t('requests::Enqueued by {{username}} on {{date}}', {
+                        username: request.owner.username,
+                        date: created,
+                    }), 'secondary')}
                 </Row>
             );
         }
@@ -157,6 +178,7 @@ function RequestCard(props: Readonly<Props>): JSX.Element {
     const {
         request, cancelled, selected, onClick,
     } = props;
+    const { t } = useTranslation('requests');
     const { operation } = request;
     const { itemRef, handleContextMenuClick, handleContextMenuCapture } = useContextMenuClick<HTMLDivElement>();
     const { type } = operation;
@@ -238,7 +260,7 @@ function RequestCard(props: Readonly<Props>): JSX.Element {
                             {operation?.lightweight && (
                                 <Row>
                                     <Col className='cvat-lightweight-label'>
-                                        <Text type='secondary'>Lightweight backup</Text>
+                                        <Text type='secondary'>{t('Lightweight backup')}</Text>
                                     </Col>
                                 </Row>
                             )}

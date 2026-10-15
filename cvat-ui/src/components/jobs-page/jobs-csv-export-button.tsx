@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
 import { JobsQuery } from 'reducers';
 import { CSVColumn } from 'utils/csv-writer';
 import { getCore, Job } from 'cvat-core-wrapper';
@@ -38,7 +39,9 @@ const columns: CSVColumn<Job>[] = [
 const JobsCSVExportButton = createCSVExportButton<Job, JobsQuery>({
     resourceName: 'jobs',
     className: 'cvat-jobs-export-csv-button',
-    tooltipTitle: 'Export jobs to CSV',
+    get tooltipTitle() {
+        return i18n.t('jobs::Export jobs to CSV');
+    },
     columns,
     uniqueKey: 'id',
     fetchPage: async (query) => {

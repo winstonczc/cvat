@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React, { RefObject } from 'react';
+import i18n from 'i18next';
 import Input from 'antd/lib/input';
 import Text from 'antd/lib/typography/Text';
 import Tooltip from 'antd/lib/tooltip';
@@ -79,11 +80,11 @@ export default class BasicConfigurationForm extends React.PureComponent<Props> {
                     className={many ? 'cvat-task-name-field-has-tooltip' : ''}
                     hasFeedback
                     name='name'
-                    label={<span>Name</span>}
+                    label={<span>{i18n.t('tasks::Name')}</span>}
                     rules={[
                         {
                             required: true,
-                            message: 'Task name cannot be empty',
+                            message: i18n.t('tasks::Task name cannot be empty'),
                         },
                     ]}
                     initialValue={this.initialName}
@@ -97,32 +98,39 @@ export default class BasicConfigurationForm extends React.PureComponent<Props> {
                     <Text type='secondary'>
                         <Tooltip title={() => (
                             <>
-                                You can use in the template:
+                                {i18n.t('tasks::You can use in the template:')}
                                 <ul>
                                     <li>
-                                        some_text - any text
+                                        some_text -
+                                        {' '}
+                                        {i18n.t('tasks::any text')}
                                     </li>
                                     <li>
                                         {'{{'}
                                         index
                                         {'}}'}
-                                        &nbsp;- index file in set
+                                        &nbsp;-
+                                        {' '}
+                                        {i18n.t('tasks::index file in set')}
                                     </li>
                                     <li>
                                         {'{{'}
                                         file_name
                                         {'}}'}
-                                        &nbsp;- name of file
+                                        &nbsp;-
+                                        {' '}
+                                        {i18n.t('tasks::name of file')}
                                     </li>
                                 </ul>
-                                Example:&nbsp;
+                                {i18n.t('common::Example:')}
+                                &nbsp;
                                 <i>
                                     {exampleMultiTaskName || 'Task name 1 - video_1.mp4'}
                                 </i>
                             </>
                         )}
                         >
-                            When forming the name, a template is used.
+                            {i18n.t('tasks::When forming the name, a template is used.')}
                             {' '}
                             <QuestionCircleOutlined />
                         </Tooltip>

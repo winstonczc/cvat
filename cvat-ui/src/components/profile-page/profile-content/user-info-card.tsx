@@ -4,6 +4,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import { isEqual } from 'lodash';
 import { CombinedState } from 'reducers';
 
@@ -26,20 +28,21 @@ interface ProfileFormValues {
     customRole?: string;
 }
 
-const roleOptions = [
-    { value: 'ml_engineer', label: 'Machine learning engineer' },
-    { value: 'data_scientist', label: 'Data scientist' },
-    { value: 'annotation_specialist', label: 'Annotation specialist' },
-    { value: 'project_manager', label: 'Project manager' },
-    { value: 'founder_executive', label: 'Founder or executive' },
-    { value: 'researcher', label: 'Researcher' },
-    { value: 'student', label: 'Student' },
-    { value: 'educator', label: 'Educator' },
-    { value: 'other', label: 'Other' },
+const getRoleOptions = (): { value: string; label: string }[] => [
+    { value: 'ml_engineer', label: i18n.t('profile::Machine learning engineer') },
+    { value: 'data_scientist', label: i18n.t('profile::Data scientist') },
+    { value: 'annotation_specialist', label: i18n.t('profile::Annotation specialist') },
+    { value: 'project_manager', label: i18n.t('profile::Project manager') },
+    { value: 'founder_executive', label: i18n.t('profile::Founder or executive') },
+    { value: 'researcher', label: i18n.t('profile::Researcher') },
+    { value: 'student', label: i18n.t('profile::Student') },
+    { value: 'educator', label: i18n.t('profile::Educator') },
+    { value: 'other', label: i18n.t('profile::Other') },
 ];
-const predefinedRoles = new Set(roleOptions.map(({ value }) => value).filter((value) => value !== 'other'));
+const predefinedRoles = new Set(getRoleOptions().map(({ value }) => value).filter((value) => value !== 'other'));
 
 function UserInfoCard(): JSX.Element {
+    const { t } = useTranslation('profile');
     const user = useSelector((state: CombinedState) => state.auth.user);
     const dispatch = useDispatch();
     const [form] = Form.useForm();
@@ -96,7 +99,7 @@ function UserInfoCard(): JSX.Element {
     };
 
     return (
-        <Card title='Personal Information' className='cvat-profile-info-card'>
+        <Card title={t('Personal Information')} className='cvat-profile-info-card'>
             <Form
                 form={form}
                 layout='vertical'
@@ -106,7 +109,7 @@ function UserInfoCard(): JSX.Element {
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item
-                            label='First Name'
+                            label={t('First Name')}
                             name='firstName'
                             rules={validationRules.firstName}
                         >
@@ -115,7 +118,7 @@ function UserInfoCard(): JSX.Element {
                     </Col>
                     <Col span={12}>
                         <Form.Item
-                            label='Last Name'
+                            label={t('Last Name')}
                             name='lastName'
                             rules={validationRules.lastName}
                         >
@@ -124,32 +127,32 @@ function UserInfoCard(): JSX.Element {
                     </Col>
                 </Row>
                 <Form.Item
-                    label='Primary role'
+                    label={t('Primary role')}
                     name='primaryRole'
                 >
-                    <Select options={roleOptions} onChange={setPrimaryRole} />
+                    <Select options={getRoleOptions()} onChange={setPrimaryRole} />
                 </Form.Item>
                 {primaryRole === 'other' && (
                     <Form.Item
-                        label='Please specify your role'
+                        label={t('Please specify your role')}
                         name='customRole'
                         rules={[
-                            { required: true, whitespace: true, message: 'Enter your role' },
-                            { max: 255, message: 'The role must not exceed 255 characters' },
+                            { required: true, whitespace: true, message: t('Enter your role') },
+                            { max: 255, message: t('The role must not exceed 255 characters') },
                         ]}
                     >
                         <Input />
                     </Form.Item>
                 )}
                 <Form.Item
-                    label='Email'
+                    label={t('common::Email')}
                     name='email'
                     rules={validationRules.email}
                 >
                     <Input disabled />
                 </Form.Item>
                 <Form.Item
-                    label='Username'
+                    label={t('common::Username')}
                     name='username'
                     rules={validationRules.userName}
                 >
@@ -162,7 +165,7 @@ function UserInfoCard(): JSX.Element {
                             type='primary'
                             htmlType='submit'
                         >
-                            Save changes
+                            {t('Save changes')}
                         </Button>
                     </Row>
                 </Form.Item>

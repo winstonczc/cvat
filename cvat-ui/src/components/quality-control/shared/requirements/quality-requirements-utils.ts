@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
 import { QualityRequirement } from 'cvat-core-wrapper';
 import {
     QUALITY_REQUIREMENT_METRICS,
@@ -19,45 +20,52 @@ export {
     QualityRequirementMetric,
 };
 
-export const ANNOTATION_TYPE_LABELS: Record<string, string> = {
-    [QualityRequirementAnnotationType.TAG]: 'Tag',
-    [QualityRequirementAnnotationType.RECTANGLE]: 'Rectangle',
-    [QualityRequirementAnnotationType.SKELETON]: 'Skeleton',
-    [QualityRequirementAnnotationType.SKELETON_KEYPOINT]: 'Skeleton keypoint',
-    [QualityRequirementAnnotationType.POINTS]: 'Points',
-    [QualityRequirementAnnotationType.POLYLINE]: 'Polyline',
-    [QualityRequirementAnnotationType.MASK]: 'Mask',
-    [QualityRequirementAnnotationType.POLYGON]: 'Polygon',
-    [QualityRequirementAnnotationType.ELLIPSE]: 'Ellipse',
-};
-
-const BASE_METRIC_LABELS: Record<QualityMetric, string> = {
-    [QualityMetric.ACCURACY]: 'Accuracy',
-    [QualityMetric.PRECISION]: 'Precision',
-    [QualityMetric.RECALL]: 'Recall',
-    [QualityMetric.JACCARD_INDEX]: 'Jaccard Index',
-    [QualityMetric.DICE]: 'Dice Coefficient',
-};
-
-export function formatBaseMetric(value: QualityRequirementMetric): string {
-    return BASE_METRIC_LABELS[parseQualityTargetMetric(value).metric];
+export function getAnnotationTypeLabels(): Record<string, string> {
+    return {
+        [QualityRequirementAnnotationType.TAG]: i18n.t('quality::Tag'),
+        [QualityRequirementAnnotationType.RECTANGLE]: i18n.t('quality::Rectangle'),
+        [QualityRequirementAnnotationType.SKELETON]: i18n.t('quality::Skeleton'),
+        [QualityRequirementAnnotationType.SKELETON_KEYPOINT]: i18n.t('quality::Skeleton keypoint'),
+        [QualityRequirementAnnotationType.POINTS]: i18n.t('quality::Points'),
+        [QualityRequirementAnnotationType.POLYLINE]: i18n.t('quality::Polyline'),
+        [QualityRequirementAnnotationType.MASK]: i18n.t('quality::Mask'),
+        [QualityRequirementAnnotationType.POLYGON]: i18n.t('quality::Polygon'),
+        [QualityRequirementAnnotationType.ELLIPSE]: i18n.t('quality::Ellipse'),
+    };
 }
 
-export const METRIC_LABELS: Record<string, string> = {
-    ...Object.fromEntries(QUALITY_REQUIREMENT_METRICS.map((value) => {
-        const { metric, aggregation } = parseQualityTargetMetric(value);
-        const label = BASE_METRIC_LABELS[metric];
+function getBaseMetricLabels(): Record<QualityMetric, string> {
+    return {
+        [QualityMetric.ACCURACY]: i18n.t('quality::Accuracy'),
+        [QualityMetric.PRECISION]: i18n.t('quality::Precision'),
+        [QualityMetric.RECALL]: i18n.t('quality::Recall'),
+        [QualityMetric.JACCARD_INDEX]: i18n.t('quality::Jaccard Index'),
+        [QualityMetric.DICE]: i18n.t('quality::Dice Coefficient'),
+    };
+}
 
-        if (aggregation === QualityMetricAggregation.MEAN) {
-            return [value, `${label} (macro/mean)`];
-        }
-        if (aggregation === QualityMetricAggregation.LABEL) {
-            return [value, `${label} (worst label)`];
-        }
+export function formatBaseMetric(value: QualityRequirementMetric): string {
+    return getBaseMetricLabels()[parseQualityTargetMetric(value).metric];
+}
 
-        return [value, `${label} (micro)`];
-    })),
-};
+export function getMetricLabels(): Record<string, string> {
+    const baseMetricLabels = getBaseMetricLabels();
+    return {
+        ...Object.fromEntries(QUALITY_REQUIREMENT_METRICS.map((value) => {
+            const { metric, aggregation } = parseQualityTargetMetric(value);
+            const label = baseMetricLabels[metric];
+
+            if (aggregation === QualityMetricAggregation.MEAN) {
+                return [value, `${label} ${i18n.t('quality::(macro/mean)')}`];
+            }
+            if (aggregation === QualityMetricAggregation.LABEL) {
+                return [value, `${label} ${i18n.t('quality::(worst label)')}`];
+            }
+
+            return [value, `${label} ${i18n.t('quality::(micro)')}`];
+        })),
+    };
+}
 
 export const ANNOTATION_TYPES: QualityRequirementAnnotationType[] = Object.values(QualityRequirementAnnotationType);
 export const METRICS: QualityRequirementMetric[] = QUALITY_REQUIREMENT_METRICS;
@@ -143,11 +151,11 @@ function formatUnknownValue(value: string | null): string {
 }
 
 export function formatAnnotationType(value: string | null): string {
-    return value ? ANNOTATION_TYPE_LABELS[value] ?? formatUnknownValue(value) : 'N/A';
+    return value ? getAnnotationTypeLabels()[value] ?? formatUnknownValue(value) : 'N/A';
 }
 
 export function formatMetric(value: string | null): string {
-    return value ? METRIC_LABELS[value] ?? formatUnknownValue(value) : 'N/A';
+    return value ? getMetricLabels()[value] ?? formatUnknownValue(value) : 'N/A';
 }
 
 export function formatThreshold(value: number | null): string {

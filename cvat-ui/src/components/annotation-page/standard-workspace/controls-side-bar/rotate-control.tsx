@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Icon from '@ant-design/icons';
 import Popover from 'antd/lib/popover';
 
@@ -21,20 +22,21 @@ export interface Props {
 const CustomPopover = withVisibilityHandling(Popover, 'rotate-canvas');
 function RotateControl(props: Props): JSX.Element {
     const { anticlockwiseShortcut, clockwiseShortcut, rotateFrame } = props;
+    const { t } = useTranslation('annotation');
 
     return (
         <CustomPopover
             placement='right'
             content={(
                 <>
-                    <CVATTooltip title={`Rotate the image anticlockwise ${anticlockwiseShortcut}`} placement='topRight'>
+                    <CVATTooltip title={`${t('Rotate the image anticlockwise')} ${anticlockwiseShortcut}`} placement='topRight'>
                         <Icon
                             className='cvat-rotate-canvas-controls-left'
                             onClick={(): void => rotateFrame(Rotation.ANTICLOCKWISE90)}
                             component={RotateIcon}
                         />
                     </CVATTooltip>
-                    <CVATTooltip title={`Rotate the image clockwise ${clockwiseShortcut}`} placement='topRight'>
+                    <CVATTooltip title={`${t('Rotate the image clockwise')} ${clockwiseShortcut}`} placement='topRight'>
                         <Icon
                             className='cvat-rotate-canvas-controls-right'
                             onClick={(): void => rotateFrame(Rotation.CLOCKWISE90)}
@@ -44,7 +46,7 @@ function RotateControl(props: Props): JSX.Element {
                 </>
             )}
         >
-            <CVATTooltip title='Rotate the image' placement='right'>
+            <CVATTooltip title={t('Rotate the image')} placement='right'>
                 <Icon className='cvat-rotate-canvas-control' component={RotateIcon} />
             </CVATTooltip>
         </CustomPopover>

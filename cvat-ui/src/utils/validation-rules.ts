@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import { RuleObject } from 'antd/lib/form';
+import i18n from 'i18next';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { RuleType } from 'rc-field-form/lib/interface';
 
@@ -28,7 +29,9 @@ const validationRules = {
     firstName: [
         {
             required: true,
-            message: 'Please specify a first name',
+            get message(): string {
+                return i18n.t('errors::Please specify a first name');
+            },
             pattern: patterns.validateName.pattern,
         },
     ],
@@ -36,7 +39,9 @@ const validationRules = {
     lastName: [
         {
             required: true,
-            message: 'Please specify a last name',
+            get message(): string {
+                return i18n.t('errors::Please specify a last name');
+            },
             pattern: patterns.validateName.pattern,
         },
     ],
@@ -44,18 +49,24 @@ const validationRules = {
     email: [
         {
             type: 'email' as RuleType,
-            message: 'The input is not valid E-mail!',
+            get message(): string {
+                return i18n.t('common::The input is not valid E-mail!');
+            },
         },
         {
             required: true,
-            message: 'Please specify an email address',
+            get message(): string {
+                return i18n.t('common::Please specify an email address');
+            },
         },
     ],
 
     userName: [
         {
             required: true,
-            message: 'Please specify a username',
+            get message(): string {
+                return i18n.t('errors::Please specify a username');
+            },
         },
         {
             validator: validateUsername,

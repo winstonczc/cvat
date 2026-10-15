@@ -8,6 +8,8 @@ import {
 import React, {
     useCallback, useEffect, useReducer, useRef,
 } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import Layout, { SiderProps } from 'antd/lib/layout';
 import { Row, Col } from 'antd/lib/grid';
 import Text from 'antd/lib/typography/Text';
@@ -58,21 +60,21 @@ function cancelCurrentCanvasOp(state: CombinedState): void {
     }
 }
 
-function makeMessage(label: Label, labelType: State['labelType'], pointsCount: number): JSX.Element {
+function makeMessage(t: (key: string, options?: any) => string, label: Label, labelType: State['labelType'], pointsCount: number): JSX.Element {
     let readableShape = '';
     if (labelType === LabelType.POINTS) {
-        readableShape = pointsCount === 1 ? 'one point' : `${pointsCount} points`;
+        readableShape = pointsCount === 1 ? t('one point') : t('{{count}} points', { count: pointsCount });
     } else if (labelType === LabelType.ELLIPSE) {
-        readableShape = 'an ellipse';
+        readableShape = t('an ellipse');
     } else {
-        readableShape = `a ${labelType}`;
+        readableShape = t('a {{labelType}}', { labelType });
     }
 
     return (
         <>
-            <Text>Annotate</Text>
+            <Text>{t('Annotate')}</Text>
             <Text strong>{` ${label.name} `}</Text>
-            <Text>on the image, using</Text>
+            <Text>{t('on the image, using')}</Text>
             <Text strong>{` ${readableShape} `}</Text>
         </>
     );
@@ -219,6 +221,7 @@ registerComponentShortcuts(componentShortcuts);
 function SingleShapeSidebar(): JSX.Element {
     const appDispatch = useDispatch();
     const store = useStore<CombinedState>();
+    const { t } = useTranslation('annotation');
     const {
         isCanvasReady,
         jobInstance,
@@ -319,12 +322,12 @@ function SingleShapeSidebar(): JSX.Element {
 
     const setRotatedShapeDrawing = useCallback(async (enabled: boolean): Promise<void> => {
         if (enabled && !openCVWrapper.isInitialized) {
-            const hide = message.loading('Initializing OpenCV for rotated shape drawing...', 0);
+            const hide = message.loading(i18n.t('annotation::Initializing OpenCV for rotated shape drawing...'), 0);
             try {
                 await openCVWrapper.initialize(() => {});
             } catch (error: unknown) {
                 notification.error({
-                    message: 'Could not initialize OpenCV',
+                    message: i18n.t('annotation::Could not initialize OpenCV'),
                     description: error instanceof Error ? error.message : String(error),
                 });
                 return;
@@ -359,7 +362,7 @@ function SingleShapeSidebar(): JSX.Element {
                 message.open({
                     duration: 1,
                     type: 'success',
-                    content: 'You tagged the job as completed',
+                    content: i18n.t('annotation::You tagged the job as completed'),
                     className: 'cvat-annotation-job-finished-success',
                 });
             })).finally(() => {
@@ -481,7 +484,7 @@ function SingleShapeSidebar(): JSX.Element {
         return (
             <Layout.Sider {...siderProps}>
                 <div className='cvat-single-shape-annotation-sidebar-not-found-wrapper'>
-                    <Text strong>No available labels found</Text>
+                    <Text strong>{t('No available labels found')}</Text>
                 </div>
             </Layout.Sider>
         );
@@ -501,17 +504,17 @@ function SingleShapeSidebar(): JSX.Element {
                         <Alert
                             className='cvat-single-shape-annotation-sidebar-hint'
                             type='info'
-                            message={makeMessage(state.label, state.labelType, state.pointsCount)}
+                            message={makeMessage(t, state.label, state.labelType, state.pointsCount)}
                         />
                         <Row justify='start' className='cvat-single-shape-annotation-sidebar-finish-frame-wrapper'>
                             <Col>
                                 {typeof state.nextFrame === 'number' ? (
                                     <Button size='large' onClick={() => finishOnThisFrame(false)}>
-                                        Skip
+                                        {t('Skip')}
                                     </Button>
                                 ) : (
                                     <Button size='large' type='primary' onClick={() => finishOnThisFrame(true)}>
-                                        Submit Results
+                                        {t('Submit Results')}
                                     </Button>
                                 )}
                             </Col>
@@ -524,44 +527,44 @@ function SingleShapeSidebar(): JSX.Element {
                                     { typeof state.nextFrame === 'number' ? (
                                         <li>
                                             <Text>
-                                                Click
-                                                <Text strong>{' Skip '}</Text>
-                                                if there is nothing to annotate
+                                                {t('Click')}
+                                                <Text strong>{` ${t('Skip')} `}</Text>
+                                                {t('if there is nothing to annotate')}
                                             </Text>
                                         </li>
                                     ) : (
                                         <li>
                                             <Text>
-                                                Click
-                                                <Text strong>{' Submit Results '}</Text>
-                                                to finish the job
+                                                {t('Click')}
+                                                <Text strong>{` ${t('Submit Results')} `}</Text>
+                                                {t('to finish the job')}
                                             </Text>
                                         </li>
                                     )}
                                     <li>
                                         <Text>
-                                            Hold
+                                            {t('Hold')}
                                             <Text strong>{' [Alt] '}</Text>
-                                            button to avoid drag the image and avoid drawing
+                                            {t('button to avoid drag the image and avoid drawing')}
                                         </Text>
                                     </li>
                                     <li>
                                         <Text>
-                                            Press
+                                            {t('Press')}
                                             <Text strong>{` ${normalizedKeyMap.UNDO} `}</Text>
-                                            to undo a created object
+                                            {t('to undo a created object')}
                                         </Text>
                                     </li>
                                     { (!isPolylabel || !state.pointsCountIsPredefined || state.pointsCount > 1) && (
                                         <li>
                                             <Text>
-                                                Press
+                                                {t('Press')}
                                                 <Text strong>
                                                     {` ${
                                                         normalizedKeyMap.CANCEL_SINGLE_SHAPE
                                                     } `}
                                                 </Text>
-                                                to reset drawing process
+                                                {t('to reset drawing process')}
                                             </Text>
                                         </li>
                                     ) }
@@ -569,26 +572,26 @@ function SingleShapeSidebar(): JSX.Element {
                                     { (isPolylabel && (!state.pointsCountIsPredefined || state.pointsCount > 1)) && (
                                         <li>
                                             <Text>
-                                                Press
+                                                {t('Press')}
                                                 <Text strong>
                                                     {` ${
                                                         normalizedKeyMap.SWITCH_DRAW_MODE_SINGLE_SHAPE
                                                     } `}
                                                 </Text>
-                                                to finish drawing process
+                                                {t('to finish drawing process')}
                                             </Text>
                                         </li>
                                     ) }
                                     { activatedStateID !== null && (
                                         <li>
                                             <Text>
-                                                Press
+                                                {t('Press')}
                                                 <Text strong>
                                                     {` ${
                                                         normalizedKeyMap.DELETE_OBJECT_SINGLE_SHAPE
                                                     } `}
                                                 </Text>
-                                                to delete current object
+                                                {t('to delete current object')}
                                             </Text>
                                         </li>
                                     )}
@@ -602,7 +605,7 @@ function SingleShapeSidebar(): JSX.Element {
                 <>
                     <Row justify='start' className='cvat-single-shape-annotation-sidebar-label'>
                         <Col>
-                            <Text strong>Label selector</Text>
+                            <Text strong>{t('Label selector')}</Text>
                         </Col>
                     </Row>
                     <Row justify='start' className='cvat-single-shape-annotation-sidebar-label-select'>
@@ -620,7 +623,7 @@ function SingleShapeSidebar(): JSX.Element {
                 <>
                     <Row justify='start' className='cvat-single-shape-annotation-sidebar-label-type'>
                         <Col>
-                            <Text strong>Label type selector</Text>
+                            <Text strong>{t('Label type selector')}</Text>
                         </Col>
                     </Row>
                     <Row justify='start' className='cvat-single-shape-annotation-sidebar-label-type-selector'>
@@ -653,7 +656,7 @@ function SingleShapeSidebar(): JSX.Element {
                                 await setRotatedShapeDrawing(event.target.checked);
                             }}
                         >
-                            Draw a rotated shape
+                            {t('Draw a rotated shape')}
                         </Checkbox>
                     </Col>
                 </Row>
@@ -667,7 +670,7 @@ function SingleShapeSidebar(): JSX.Element {
                             dispatch(actionCreators.switchAutoNextFrame(!state.autoNextFrame));
                         }}
                     >
-                        Automatically go to the next frame
+                        {t('Automatically go to the next frame')}
                     </Checkbox>
                 </Col>
             </Row>
@@ -680,7 +683,7 @@ function SingleShapeSidebar(): JSX.Element {
                             dispatch(actionCreators.switchAutoSaveOnFinish());
                         }}
                     >
-                        Automatically save when finish
+                        {t('Automatically save when finish')}
                     </Checkbox>
                 </Col>
             </Row>
@@ -697,7 +700,7 @@ function SingleShapeSidebar(): JSX.Element {
                             }
                         }}
                     >
-                        Navigate only empty frames
+                        {t('Navigate only empty frames')}
                     </Checkbox>
                 </Col>
             </Row>
@@ -711,7 +714,7 @@ function SingleShapeSidebar(): JSX.Element {
                                 dispatch(actionCreators.switchCountOfPointsIsPredefined());
                             }}
                         >
-                            Predefined number of points
+                            {t('Predefined number of points')}
                         </Checkbox>
                     </Col>
                 </Row>
@@ -720,7 +723,7 @@ function SingleShapeSidebar(): JSX.Element {
                 <>
                     <Row justify='start' className='cvat-single-shape-annotation-sidebar-points-count'>
                         <Col>
-                            <Text strong>Number of points</Text>
+                            <Text strong>{t('Number of points')}</Text>
                         </Col>
                     </Row>
                     <Row justify='start' className='cvat-single-shape-annotation-sidebar-points-count-input'>

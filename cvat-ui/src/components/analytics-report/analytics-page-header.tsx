@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Title from 'antd/lib/typography/Title';
 import Button from 'antd/lib/button';
 import DatePicker from 'antd/lib/date-picker';
@@ -28,18 +29,19 @@ function AnaylyticsPageHeader(props: Props): JSX.Element {
         exporting,
         fetching,
     } = props;
+    const { t } = useTranslation('analytics');
 
     return (
         <Row justify='space-between' align='middle'>
             <Col className='cvat-analytics-header'>
                 <Title level={4} className='cvat-text-color'>
-                    {'Analytics for '}
+                    {t('Analytics for ')}
                     <ResourceLink resource={resource} />
                 </Title>
             </Col>
             <Col>
                 <DatePicker.RangePicker
-                    placeholder={['UTC start date', 'UTC end date']}
+                    placeholder={[t('UTC start date'), t('UTC end date')]}
                     className='cvat-analytics-date-picker'
                     onChange={(value) => {
                         if (value) {
@@ -60,7 +62,7 @@ function AnaylyticsPageHeader(props: Props): JSX.Element {
                     icon={<DownloadOutlined />}
                     onClick={onExportEvents}
                 >
-                    Export events
+                    {t('Export events')}
                 </Button>
             </Col>
         </Row>

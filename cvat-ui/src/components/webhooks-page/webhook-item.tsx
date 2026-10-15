@@ -4,6 +4,8 @@
 
 import './styles.scss';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import dayjs from 'dayjs';
 import { Col, Row } from 'antd/lib/grid';
 import Button from 'antd/lib/button';
@@ -34,23 +36,24 @@ interface WebhookStatus {
 function setUpWebhookStatus(status: number): WebhookStatus {
     if (status?.toString().startsWith('2')) {
         return {
-            message: `Last delivery was successful. Response: ${status}`,
+            message: i18n.t('webhooks::Last delivery was successful. Response: {{status}}', { status }),
             className: 'cvat-webhook-status-available',
         };
     }
     if (status?.toString().startsWith('5')) {
         return {
-            message: `Last delivery was not successful. Response: ${status}`,
+            message: i18n.t('webhooks::Last delivery was not successful. Response: {{status}}', { status }),
             className: 'cvat-webhook-status-failed',
         };
     }
     return {
-        message: status ? `Response: ${status}` : undefined,
+        message: status ? i18n.t('webhooks::Response: {{status}}', { status }) : undefined,
         className: 'cvat-webhook-status-unavailable',
     };
 }
 
 function WebhookItem(props: Readonly<WebhookItemProps>): JSX.Element | null {
+    const { t } = useTranslation('webhooks');
     const [pingFetching, setPingFetching] = useState<boolean>(false);
     const {
         webhookInstance, webhookEvents, selected, onClick,
@@ -122,11 +125,11 @@ function WebhookItem(props: Readonly<WebhookItemProps>): JSX.Element | null {
                 </Paragraph>
                 {username && (
                     <>
-                        <Text type='secondary'>{`Created by ${username} on ${created}`}</Text>
+                        <Text type='secondary'>{t('Created by {{username}} on {{created}}', { username, created })}</Text>
                         <br />
                     </>
                 )}
-                <Text type='secondary'>{`Last updated ${updated}`}</Text>
+                <Text type='secondary'>{t('Last updated {{updated}}', { updated })}</Text>
             </Col>
             <Col span={6} offset={1}>
                 <Paragraph ellipsis={{
@@ -134,7 +137,7 @@ function WebhookItem(props: Readonly<WebhookItemProps>): JSX.Element | null {
                     rows: 3,
                 }}
                 >
-                    <Text type='secondary' className='cvat-webhook-info-text'>URL:</Text>
+                    <Text type='secondary' className='cvat-webhook-info-text'>{t('URL:')}</Text>
                     {targetURL}
                 </Paragraph>
             </Col>
@@ -144,7 +147,7 @@ function WebhookItem(props: Readonly<WebhookItemProps>): JSX.Element | null {
                     rows: 3,
                 }}
                 >
-                    <Text type='secondary' className='cvat-webhook-info-text'>Events:</Text>
+                    <Text type='secondary' className='cvat-webhook-info-text'>{t('Events:')}</Text>
                     {eventsList}
                 </Paragraph>
             </Col>
@@ -160,7 +163,7 @@ function WebhookItem(props: Readonly<WebhookItemProps>): JSX.Element | null {
                             ghost
                             onClick={onPing}
                         >
-                            Ping
+                            {t('Ping')}
                         </Button>
                     </Col>
                 </Row>
@@ -170,7 +173,7 @@ function WebhookItem(props: Readonly<WebhookItemProps>): JSX.Element | null {
                             className='cvat-webhooks-page-actions-button cvat-actions-menu-button'
                             onClick={handleContextMenuClick}
                         >
-                            <Text className='cvat-text-color'>Actions</Text>
+                            <Text className='cvat-text-color'>{t('Actions')}</Text>
                             <MoreOutlined className='cvat-menu-icon' />
                         </div>
                     </Col>

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDraggable } from '@dnd-kit/core';
 import {
@@ -38,6 +39,7 @@ function LayerHeader(props: LayerHeaderProps): JSX.Element {
     const {
         attributes, listeners, setNodeRef, isDragging,
     } = useDraggable({ id: layerDragID(zOrder) });
+    const { t } = useTranslation('annotation');
 
     const style = isDragging ? { pointerEvents: 'none' as const } : {};
 
@@ -47,8 +49,10 @@ function LayerHeader(props: LayerHeaderProps): JSX.Element {
         ...(!visible ? ['cvat-objects-sidebar-z-layer-mark-invisible'] : []),
     ].join(' ');
 
-    const visibilityTooltip = `${visible ? 'Hide' : 'Show'} layer. Hold Shift when clicking to apply for lower layers`;
-    const selectLayerTooltip = selected ? 'Current layer' : 'Set as current layer';
+    const visibilityTooltip = t('{{action}} layer. Hold Shift when clicking to apply for lower layers', {
+        action: visible ? t('Hide') : t('Show'),
+    });
+    const selectLayerTooltip = selected ? t('Current layer') : t('Set as current layer');
     return (
         <div
             ref={setNodeRef}
@@ -61,7 +65,7 @@ function LayerHeader(props: LayerHeaderProps): JSX.Element {
             onKeyDown={onKeyDown}
         >
             <div>
-                <CVATTooltip title={collapsed ? 'Expand layer' : 'Collapse layer'}>
+                <CVATTooltip title={collapsed ? t('Expand layer') : t('Collapse layer')}>
                     <Button
                         className='cvat-objects-sidebar-z-layer-collapse-button'
                         type='text'
@@ -81,7 +85,7 @@ function LayerHeader(props: LayerHeaderProps): JSX.Element {
                         onClick={(): void => selectLayer(zOrder)}
                     />
                 </CVATTooltip>
-                <CVATTooltip title='Drag layer'>
+                <CVATTooltip title={t('Drag layer')}>
                     <Button
                         {...attributes}
                         {...listeners}

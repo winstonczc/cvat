@@ -4,6 +4,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Text from 'antd/lib/typography/Text';
 import Form from 'antd/lib/form';
 import Switch from 'antd/lib/switch';
@@ -50,6 +51,7 @@ function QualitySettingsTab(props: Readonly<Props>): JSX.Element | null {
 
     const [form] = Form.useForm();
     const [requirementFormVisible, setRequirementFormVisible] = useState(false);
+    const { t } = useTranslation(['quality', 'common']);
 
     const inherited = inheritsProjectQualitySettings(instance, settings);
     const effectiveSettings = getEffectiveQualitySettings(instance, settings, parentSettings);
@@ -114,8 +116,8 @@ function QualitySettingsTab(props: Readonly<Props>): JSX.Element | null {
         header = (
             <div className='cvat-quality-control-settings-header'>
                 <Switch checked={settings?.inherit} onChange={onInheritChange} />
-                <Text>Use</Text>
-                <Link to={`/projects/${instance.projectId}/quality-control#settings`}>&nbsp;project settings</Link>
+                <Text>{t('Use')}</Text>
+                <Link to={`/projects/${instance.projectId}/quality-control#settings`}>&nbsp;{t('project settings')}</Link>
             </div>
         );
     } else if (instance instanceof Project && nonInheritedChildSettings.length !== 0) {
@@ -126,7 +128,7 @@ function QualitySettingsTab(props: Readonly<Props>): JSX.Element | null {
                     message={(
                         <div>
                             <ExclamationCircleFilled className='ant-alert-icon' />
-                            <Text>{`Own settings are used in ${nonInheritedChildSettings.length} tasks`}</Text>
+                            <Text>{t('Own settings are used in {{count}} tasks', { count: nonInheritedChildSettings.length })}</Text>
                         </div>
                     )}
                     action={(
@@ -135,16 +137,16 @@ function QualitySettingsTab(props: Readonly<Props>): JSX.Element | null {
                             danger
                             onClick={() => {
                                 Modal.confirm({
-                                    title: 'Are you sure you want to force project settings?',
+                                    title: t('Are you sure you want to force project settings?'),
                                     icon: <ExclamationCircleFilled />,
-                                    content: 'This action will override own settings in all tasks.',
-                                    okText: 'Yes',
-                                    cancelText: 'No',
+                                    content: t('This action will override own settings in all tasks.'),
+                                    okText: t('common::Yes'),
+                                    cancelText: t('common::No'),
                                     onOk: onChildInheritChange,
                                 });
                             }}
                         >
-                            Force project settings
+                            {t('Force project settings')}
                         </Button>
                     )}
                 />
@@ -159,7 +161,7 @@ function QualitySettingsTab(props: Readonly<Props>): JSX.Element | null {
                     <Row justify='end' className='cvat-quality-settings-save-btn'>
                         <Col>
                             <Button onClick={onSave} type='primary' disabled={inherited}>
-                                Save
+                                {t('common::Save')}
                             </Button>
                         </Col>
                     </Row>

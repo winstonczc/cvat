@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Popover from 'antd/lib/popover';
 import Icon from '@ant-design/icons';
 
@@ -21,12 +22,13 @@ export interface Props {
 const CustomPopover = withVisibilityHandling(Popover, 'setup-tag');
 function SetupTagControl(props: Props): JSX.Element {
     const { disabled } = props;
+    const { t } = useTranslation('annotation');
 
     return disabled ? (
         <Icon className='cvat-setup-tag-control cvat-disabled-canvas-control' component={TagIcon} />
     ) : (
         <CustomPopover placement='right' content={<SetupTagPopoverContainer />}>
-            <CVATTooltip title='Create a tag' placement='right'>
+            <CVATTooltip title={t('Create a tag')} placement='right'>
                 <Icon className='cvat-setup-tag-control' component={TagIcon} />
             </CVATTooltip>
         </CustomPopover>

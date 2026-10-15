@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Layout from 'antd/lib/layout';
 import message from 'antd/lib/message';
 
@@ -181,6 +182,7 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
         selectionGroupDisabledReason,
         groupSelection,
     } = props;
+    const { t } = useTranslation('annotation');
 
     const controlsDisabled = !labels.length || frameData.deleted;
     const withUnspecifiedType = labels.some((label: any) => label.type === 'any' && !label.hasParent);
@@ -264,9 +266,9 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
                 if (selectionGroupDisabledReason) {
                     message.warning(selectionGroupDisabledReason);
                 } else if (selectedObjectsCount < 2) {
-                    message.warning('Select at least two objects to group');
+                    message.warning(t('Select at least two objects to group'));
                 } else if (selectedObjectsInSameGroup) {
-                    message.warning('Selected objects are already in the same group');
+                    message.warning(t('Selected objects are already in the same group'));
                 } else {
                     groupSelection();
                 }
@@ -320,7 +322,7 @@ export default function ControlsSideBarComponent(props: Props): JSX.Element {
                 } else if (hasGroupedSelectedObjects) {
                     groupSelection(true);
                 } else {
-                    message.warning('No selected objects are grouped');
+                    message.warning(t('No selected objects are grouped'));
                 }
                 return;
             }

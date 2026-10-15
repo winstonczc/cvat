@@ -4,6 +4,8 @@
 // SPDX-License-Identifier: MIT
 
 import React, { useState, useRef, useEffect } from 'react';
+import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
 import Text from 'antd/lib/typography/Text';
 import Checkbox, { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import Select, { SelectValue } from 'antd/lib/select';
@@ -52,6 +54,7 @@ function renderInputElement(parameters: InputElementParameters): JSX.Element {
         inputType, attrID, clientID, values, currentValue, onChange,
     } = parameters;
 
+    const { t } = useTranslation('annotation');
     const ref = useRef<TextAreaRef>(null);
     const [selectionStart, setSelectionStart] = useState<number>(currentValue.length);
     const [localAttrValue, setAttributeValue] = useState(currentValue);
@@ -81,7 +84,7 @@ function renderInputElement(parameters: InputElementParameters): JSX.Element {
 
     const renderCheckbox = (): JSX.Element => (
         <>
-            <Text strong>Checkbox: </Text>
+            <Text strong>{t('Checkbox:')}</Text>
             <div className='attribute-annotation-sidebar-attr-elem-wrapper'>
                 <Checkbox
                     onChange={(event: CheckboxChangeEvent): void => setAttributeValue(event.target.checked ? 'true' : 'false')}
@@ -93,7 +96,7 @@ function renderInputElement(parameters: InputElementParameters): JSX.Element {
 
     const renderSelect = (): JSX.Element => (
         <>
-            <Text strong>Values: </Text>
+            <Text strong>{t('Values:')}</Text>
             <div className='attribute-annotation-sidebar-attr-elem-wrapper'>
                 <Select
                     value={localAttrValue}
@@ -114,7 +117,7 @@ function renderInputElement(parameters: InputElementParameters): JSX.Element {
 
     const renderRadio = (): JSX.Element => (
         <>
-            <Text strong>Values: </Text>
+            <Text strong>{t('Values:')}</Text>
             <div className='attribute-annotation-sidebar-attr-elem-wrapper'>
                 <Radio.Group
                     value={localAttrValue}
@@ -145,7 +148,7 @@ function renderInputElement(parameters: InputElementParameters): JSX.Element {
         const [min, max, step] = values;
         return (
             <>
-                <Text strong>Number: </Text>
+                <Text strong>{t('Number:')}</Text>
                 <div className='attribute-annotation-sidebar-attr-elem-wrapper'>
                     <InputNumber
                         autoFocus
@@ -168,7 +171,7 @@ function renderInputElement(parameters: InputElementParameters): JSX.Element {
 
     const renderText = (): JSX.Element => (
         <>
-            <Text strong>Text: </Text>
+            <Text strong>{t('Text:')}</Text>
             <div className='attribute-annotation-sidebar-attr-elem-wrapper'>
                 <Input.TextArea
                     autoFocus
@@ -212,6 +215,7 @@ interface ListProps {
 
 function AttrValuesList(props: ListProps): JSX.Element | null {
     const { inputType, values, onChange } = props;
+    const { t } = useTranslation('annotation');
     const { keyMap, normalizedKeyMap } = useSelector((state: CombinedState) => ({
         keyMap: state.shortcuts.keyMap,
         normalizedKeyMap: state.shortcuts.normalizedKeyMap,
@@ -245,8 +249,8 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
                 updatedComponentShortcuts[key] = {
                     ...updatedComponentShortcuts[key],
                     nonActive: false,
-                    name: `Assign attribute value ${value}`,
-                    description: `Change current value for the attribute to ${value}`,
+                    name: i18n.t('shortcuts::Assign attribute value {{value}}', { value }),
+                    description: i18n.t('shortcuts::Change current value for the attribute to {{value}}', { value }),
                 };
             });
 
@@ -334,15 +338,15 @@ function AttrValuesList(props: ListProps): JSX.Element | null {
         return (
             <div className='attribute-annotation-sidebar-attr-list-wrapper'>
                 <div>
-                    <Text strong>From:</Text>
+                    <Text strong>{t('From:')}</Text>
                     <Text>{` ${values[0]}`}</Text>
                 </div>
                 <div>
-                    <Text strong>To:</Text>
+                    <Text strong>{t('To:')}</Text>
                     <Text>{` ${values[1]}`}</Text>
                 </div>
                 <div>
-                    <Text strong>Step:</Text>
+                    <Text strong>{t('Step:')}</Text>
                     <Text>{` ${values[2]}`}</Text>
                 </div>
             </div>

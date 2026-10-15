@@ -5,6 +5,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import Menu from 'antd/lib/menu';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { MenuInfo } from 'rc-menu/lib/interface';
@@ -56,28 +57,29 @@ enum ReviewContextMenuKeys {
 function ReviewContextMenu({
     top, left, latestComments, conflict, copyObject, onClick,
 }: ReviewContextMenuProps): JSX.Element {
+    const { t } = useTranslation('annotation');
     return (
         <Menu onClick={onClick} selectable={false} className='cvat-canvas-context-menu' style={{ top, left }}>
             <Menu.Item className='cvat-context-menu-item' key={ReviewContextMenuKeys.OPEN_ISSUE}>
-                Open an issue ...
+                {t('Open an issue ...')}
             </Menu.Item>
             {conflict ? (
                 <Menu.Item
                     className='cvat-context-menu-item cvat-quick-issue-from-conflict'
                     key={ReviewContextMenuKeys.QUICK_ISSUE_FROM_CONFLICT}
                 >
-                    {`Quick issue: ${conflict.description}`}
+                    {t('Quick issue: {{description}}', { description: conflict.description })}
                 </Menu.Item>
             ) : null}
             <Menu.Item className='cvat-context-menu-item' key={ReviewContextMenuKeys.QUICK_ISSUE_POSITION}>
-                Quick issue: incorrect position
+                {t('Quick issue: incorrect position')}
             </Menu.Item>
             <Menu.Item className='cvat-context-menu-item' key={ReviewContextMenuKeys.QUICK_ISSUE_ATTRIBUTE}>
-                Quick issue: incorrect attribute
+                {t('Quick issue: incorrect attribute')}
             </Menu.Item>
             {latestComments.length ? (
                 <Menu.SubMenu
-                    title='Quick issue ...'
+                    title={t('Quick issue ...')}
                     className='cvat-context-menu-item'
                     key={ReviewContextMenuKeys.QUICK_ISSUE_FROM_LATEST}
                 >
@@ -98,7 +100,7 @@ function ReviewContextMenu({
                     className='cvat-context-menu-item cvat-quick-copy-object'
                     key={ReviewContextMenuKeys.COPY_OBJECT}
                 >
-                    Copy annotation
+                    {t('Copy annotation')}
                 </Menu.Item>
             ) : null}
         </Menu>

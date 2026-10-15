@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import Text from 'antd/lib/typography/Text';
 import { Row, Col } from 'antd/lib/grid';
@@ -52,12 +53,13 @@ function TaskItemComponent(props: TaskItemProps): JSX.Element {
     } = props;
 
     const isMounted = useIsMounted();
+    const { t } = useTranslation('tasks');
     const { itemRef, handleContextMenuClick, handleContextMenuCapture } = useContextMenuClick<HTMLDivElement>();
 
     const [importingState, setImportingState] = useState<ImportingState | null>(
         taskInstance.size > 0 ? null : {
             state: null,
-            message: 'Request current progress',
+            message: t('Request current progress'),
             progress: 0,
         },
     );
@@ -150,21 +152,21 @@ function TaskItemComponent(props: TaskItemProps): JSX.Element {
                         <div>
                             {numOfCompleted > 0 && (
                                 <Text strong className='cvat-task-completed-progress'>
-                                    {`\u2022 ${numOfCompleted} done `}
+                                    {t('\u2022 {{count}} done ', { count: numOfCompleted })}
                                 </Text>
                             )}
                             {numOfValidation > 0 && (
                                 <Text strong className='cvat-task-validation-progress'>
-                                    {`\u2022 ${numOfValidation} on review `}
+                                    {t('\u2022 {{count}} on review ', { count: numOfValidation })}
                                 </Text>
                             )}
                             {numOfAnnotation > 0 && (
                                 <Text strong className='cvat-task-annotation-progress'>
-                                    {`\u2022 ${numOfAnnotation} annotating `}
+                                    {t('\u2022 {{count}} annotating ', { count: numOfAnnotation })}
                                 </Text>
                             )}
                             <Text strong type='secondary'>
-                                {`\u2022 ${numOfJobs} total`}
+                                {t('\u2022 {{count}} total', { count: numOfJobs })}
                             </Text>
                         </div>
                         <Progress
@@ -212,11 +214,11 @@ function TaskItemComponent(props: TaskItemProps): JSX.Element {
                 <br />
                 {owner && (
                     <>
-                        <Text type='secondary'>{`Created ${owner ? `by ${owner}` : ''} on ${created}`}</Text>
+                        <Text type='secondary'>{t('Created by {{owner}} on {{created}}', { owner, created })}</Text>
                         <br />
                     </>
                 )}
-                <Text type='secondary'>{`Last updated ${updated}`}</Text>
+                <Text type='secondary'>{t('Last updated {{updated}}', { updated })}</Text>
             </Col>
             {renderProgress()}
             <Col span={3}>
@@ -230,7 +232,7 @@ function TaskItemComponent(props: TaskItemProps): JSX.Element {
                                 size='large'
                                 ghost
                             >
-                                Open
+                                {t('Open')}
                             </Button>
                         </Link>
                     </Col>
@@ -241,7 +243,7 @@ function TaskItemComponent(props: TaskItemProps): JSX.Element {
                             onClick={handleContextMenuClick}
                             className='cvat-task-item-actions-button cvat-actions-menu-button'
                         >
-                            <Text className='cvat-text-color'>Actions</Text>
+                            <Text className='cvat-text-color'>{t('Actions')}</Text>
                             <MoreOutlined className='cvat-menu-icon' />
                         </div>
                     </Col>

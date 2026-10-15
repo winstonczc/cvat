@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Icon from '@ant-design/icons';
 
 import { MergeIcon } from 'icons';
@@ -27,12 +28,13 @@ function MergeControl(props: Props): JSX.Element {
     } = props;
 
     const { normalizedKeyMap } = useSelector((state: CombinedState) => state.shortcuts);
+    const { t } = useTranslation('annotation');
 
     return disabled ? (
         <Icon className='cvat-merge-control cvat-disabled-canvas-control' component={MergeIcon} />
     ) : (
         <CVATTooltip
-            title={`Merge shapes/tracks ${
+            title={`${t('Merge shapes/tracks')} ${
                 canvasInstance instanceof Canvas ?
                     normalizedKeyMap.SWITCH_MERGE_MODE_STANDARD_CONTROLS :
                     normalizedKeyMap.SWITCH_MERGE_MODE_STANDARD_3D_CONTROLS}`}

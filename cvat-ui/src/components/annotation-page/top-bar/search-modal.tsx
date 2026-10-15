@@ -4,6 +4,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import Modal from 'antd/lib/modal';
 import Text from 'antd/lib/typography/Text';
@@ -25,6 +26,7 @@ const SEARCH_DEBOUNCE_TIME = 100;
 
 function SearchFramesModal(): JSX.Element {
     const dispatch = useDispatch();
+    const { t } = useTranslation('annotation');
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     const {
@@ -101,10 +103,10 @@ function SearchFramesModal(): JSX.Element {
             <AutoComplete
                 ref={autoCompleteRef}
                 defaultValue={searchTerm}
-                placeholder='Type to search'
+                placeholder={t('Type to search')}
                 showSearch
                 onSearch={onSearch}
-                notFoundContent={searchTerm ? <Text>No frames found</Text> : null}
+                notFoundContent={searchTerm ? <Text>{t('No frames found')}</Text> : null}
                 options={searchResults.map((item) => ({
                     value: item.number,
                     label: (

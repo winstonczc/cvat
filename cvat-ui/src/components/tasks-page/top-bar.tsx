@@ -3,8 +3,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 
 import { Row, Col } from 'antd/lib/grid';
@@ -28,12 +29,8 @@ import dimensions from 'utils/dimensions';
 import CvatDropdownMenuPaper from 'components/common/cvat-dropdown-menu-paper';
 import TasksCSVExportButton from './tasks-csv-export-button';
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues, getFilterConfiguration,
 } from './tasks-filter-configuration';
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues,
-);
 
 interface VisibleTopBarProps {
     onApplyFilter(filter: string | null): void;
@@ -47,6 +44,17 @@ interface VisibleTopBarProps {
 
 export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JSX.Element {
     const dispatch = useDispatch();
+    const { t, i18n } = useTranslation('tasks');
+    // filter configuration contains localized labels, rebuild it on language change
+    const FilteringComponent = useMemo(
+        () => ResourceFilterHOC(
+            getFilterConfiguration(),
+            localStorageRecentKeyword,
+            localStorageRecentCapacity,
+            getPredefinedFilterValues(),
+        ),
+        [i18n.language],
+    );
     const {
         importing, query, onApplyFilter, onApplySorting, onApplySearch,
         selectedCount, onSelectAll,
@@ -73,7 +81,7 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
                             }}
                             defaultValue={query.search ?? ''}
                             className='cvat-tasks-page-search-bar'
-                            placeholder='Search ...'
+                            placeholder={t('Search ...')}
                         />
                         <ResourceSelectionInfo selectedCount={selectedCount} onSelectAll={onSelectAll} />
                     </div>
@@ -120,7 +128,7 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
                                     onClick={(): void => history.push('/tasks/create')}
                                     icon={<PlusOutlined />}
                                 >
-                                    Create a new task
+                                    {t('Create a new task')}
                                 </Button>
                                 <Button
                                     className='cvat-create-audio-task-button'
@@ -128,7 +136,7 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
                                     onClick={(): void => history.push('/tasks/create?type=audio')}
                                     icon={<SoundOutlined />}
                                 >
-                                    Create a new audio task
+                                    {t('Create a new audio task')}
                                 </Button>
                                 <Button
                                     className='cvat-create-multi-tasks-button'
@@ -136,7 +144,7 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
                                     onClick={(): void => history.push('/tasks/create?many=true')}
                                     icon={<span className='anticon'><MultiPlusIcon /></span>}
                                 >
-                                    Create multi tasks
+                                    {t('Create multi tasks')}
                                 </Button>
                                 <Button
                                     className='cvat-import-task-button'
@@ -145,7 +153,7 @@ export default function TopBarComponent(props: Readonly<VisibleTopBarProps>): JS
                                     icon={importing ? <LoadingOutlined /> : <UploadOutlined />}
                                     onClick={() => dispatch(importActions.openImportBackupModal('task'))}
                                 >
-                                    Create from backup
+                                    {t('Create from backup')}
                                 </Button>
                             </CvatDropdownMenuPaper>
                         )}

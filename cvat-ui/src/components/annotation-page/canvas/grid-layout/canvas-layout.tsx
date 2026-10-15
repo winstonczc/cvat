@@ -7,6 +7,7 @@ import 'react-grid-layout/css/styles.css';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import RGL, { WidthProvider } from 'react-grid-layout';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
@@ -144,6 +145,7 @@ const fitLayout = (type: DimensionType, layoutConfig: ItemLayout[]): ItemLayout[
 };
 
 function CanvasLayout({ type }: { type?: DimensionType }): JSX.Element {
+    const { t } = useTranslation('annotation');
     const {
         relatedFiles,
         canvasInstance,
@@ -226,7 +228,7 @@ function CanvasLayout({ type }: { type?: DimensionType }): JSX.Element {
     const showCommonSetups = Boolean(relatedFiles) || children.length > 1;
     const commonSetups = (
         <div className='cvat-grid-layout-common-setups'>
-            <CVATTooltip title='Fit views'>
+            <CVATTooltip title={t('Fit views')}>
                 <PicCenterOutlined
                     onClick={() => {
                         setLayoutConfig(fitLayout(type as DimensionType, layoutConfig));
@@ -234,7 +236,7 @@ function CanvasLayout({ type }: { type?: DimensionType }): JSX.Element {
                     }}
                 />
             </CVATTooltip>
-            <CVATTooltip title='Add context image'>
+            <CVATTooltip title={t('Add context image')}>
                 <PlusOutlined
                     style={{
                         pointerEvents: !relatedFiles ? 'none' : undefined,
@@ -273,7 +275,7 @@ function CanvasLayout({ type }: { type?: DimensionType }): JSX.Element {
                     }}
                 />
             </CVATTooltip>
-            <CVATTooltip title='Reload layout'>
+            <CVATTooltip title={t('Reload layout')}>
                 <ReloadOutlined onClick={() => {
                     setLayoutConfig([...getLayout()]);
                     window.dispatchEvent(new Event('resize'));

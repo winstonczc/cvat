@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactDOM from 'react-dom';
 import Text from 'antd/lib/typography/Text';
 import Slider from 'antd/lib/slider';
@@ -18,6 +19,7 @@ export const MAX_THRESHOLD = 0.9;
 
 function ConfidenceThreshold(props: Props): React.ReactPortal | null {
     const { thresholdValue, onChange } = props;
+    const { t } = useTranslation('annotation');
     const target = window.document.getElementsByClassName('cvat-canvas-container')[0];
 
     return target ?
@@ -35,7 +37,7 @@ function ConfidenceThreshold(props: Props): React.ReactPortal | null {
                         onChange={onChange}
                     />
                 </Col>
-                <Text type='secondary'>minimum confidence filter</Text>
+                <Text type='secondary'>{t('minimum confidence filter')}</Text>
             </Row>,
             target,
         ) :

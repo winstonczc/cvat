@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { MoreOutlined } from '@ant-design/icons';
 import Button from 'antd/lib/button';
 import Dropdown from 'antd/lib/dropdown';
@@ -19,6 +20,7 @@ export default function CloudStorageActionsMenu(props: Props): JSX.Element {
     const {
         onUpdate, onDelete, selectedIds, triggerElement, dropdownTrigger,
     } = props;
+    const { t } = useTranslation('cloud-storages');
     const isBulkMode = selectedIds.length > 1;
     const bulkAllowedKeys = ['delete'];
     const isDisabled = (key: string): boolean => isBulkMode && !bulkAllowedKeys.includes(key);
@@ -33,13 +35,13 @@ export default function CloudStorageActionsMenu(props: Props): JSX.Element {
     const items = [
         {
             key: 'update',
-            label: withCount('Update', 'update'),
+            label: withCount(t('Update'), 'update'),
             onClick: onUpdate,
             disabled: isDisabled('update'),
         },
         {
             key: 'delete',
-            label: withCount('Delete', 'delete'),
+            label: withCount(t('Delete'), 'delete'),
             onClick: onDelete,
             disabled: isDisabled('delete'),
         },

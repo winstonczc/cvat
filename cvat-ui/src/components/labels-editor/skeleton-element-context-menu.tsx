@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import Button from 'antd/lib/button';
 import Modal from 'antd/lib/modal';
@@ -58,6 +59,7 @@ function SkeletonElementContextMenu(props: ContextMenuProps): JSX.Element {
     const {
         container, disabled, elementID, onDelete,
     } = props;
+    const { t } = useTranslation('labels');
     const [configuratorVisible, setConfiguratorVisible] = useState(false);
 
     const targetPoint = container.querySelector(`[data-element-id="${elementID}"]`);
@@ -96,7 +98,7 @@ function SkeletonElementContextMenu(props: ContextMenuProps): JSX.Element {
                         icon={<EditOutlined />}
                         key='configure_label'
                     >
-                        Configure
+                        {t('Configure')}
                     </Button>
                     <Button
                         type='link'
@@ -107,7 +109,7 @@ function SkeletonElementContextMenu(props: ContextMenuProps): JSX.Element {
                         icon={<DeleteOutlined />}
                         key='delete'
                     >
-                        Delete
+                        {t('Delete')}
                     </Button>
                 </div>
             )}

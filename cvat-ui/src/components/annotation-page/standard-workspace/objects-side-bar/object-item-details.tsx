@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd/lib/grid';
 import Text from 'antd/lib/typography/Text';
 import Collapse from 'antd/lib/collapse';
@@ -103,6 +104,7 @@ function ItemAttributesComponent(props: Props): JSX.Element | null {
         collapsed, attributes, values, readonly, changeAttribute, collapse, mixedAttributeIDs = new Set(),
         sizeParams, changeSize, source, score, votes, detailsLabel = 'DETAILS',
     } = props;
+    const { t } = useTranslation('annotation');
 
     const isConsensus = source === Source.CONSENSUS;
     const withScore = isConsensus;
@@ -118,7 +120,7 @@ function ItemAttributesComponent(props: Props): JSX.Element | null {
 
     const scoreTag = withScore ? (
         <CVATTooltip
-            title='Consensus score'
+            title={t('Consensus score')}
             align={{
                 ...baseTooltipAlign,
                 targetOffset: ['25%', '40%'],
@@ -131,7 +133,7 @@ function ItemAttributesComponent(props: Props): JSX.Element | null {
     ) : null;
     const votesTag = withVotes ? (
         <CVATTooltip
-            title='Number of votes'
+            title={t('Number of votes')}
             align={{
                 ...baseTooltipAlign,
                 targetOffset: ['40%', '40%'],
@@ -166,7 +168,7 @@ function ItemAttributesComponent(props: Props): JSX.Element | null {
                     key: 'details',
                     label: (
                         <Row style={{ width: '100%' }} align='middle' justify='space-between'>
-                            <Text style={{ fontSize: 10 }} type='secondary'>{detailsLabel}</Text>
+                            <Text style={{ fontSize: 10 }} type='secondary'>{t(detailsLabel)}</Text>
                             {scoreVotesElement}
                         </Row>
                     ),
@@ -175,7 +177,7 @@ function ItemAttributesComponent(props: Props): JSX.Element | null {
                             <Row key='size' justify='space-around' className='cvat-objects-sidebar-size-params'>
                                 {sizeFields.map((field) => (
                                     <Col key={field.key}>
-                                        <CVATTooltip title={field.tooltip}>
+                                        <CVATTooltip title={t(field.tooltip)}>
                                             <Text type='secondary'>
                                                 {`${field.label}:`}
                                             </Text>

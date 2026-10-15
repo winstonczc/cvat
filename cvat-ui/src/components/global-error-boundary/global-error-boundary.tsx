@@ -6,6 +6,7 @@
 import './styles.scss';
 import React from 'react';
 import { connect } from 'react-redux';
+import i18n from 'i18next';
 import Result from 'antd/lib/result';
 import Text from 'antd/lib/typography/Text';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -106,19 +107,19 @@ class GlobalErrorBoundary extends React.PureComponent<Props, State> {
                 <div className='cvat-global-boundary'>
                     <Result
                         status='error'
-                        title='Oops, something went wrong'
-                        subTitle='More likely there are some issues with the tool'
+                        title={i18n.t('common::Oops, something went wrong')}
+                        subTitle={i18n.t('common::More likely there are some issues with the tool')}
                     >
                         <div>
                             <Paragraph>
-                                <Paragraph strong>What has happened?</Paragraph>
-                                <Paragraph>Program error has just occurred</Paragraph>
+                                <Paragraph strong>{i18n.t('common::What has happened?')}</Paragraph>
+                                <Paragraph>{i18n.t('common::Program error has just occurred')}</Paragraph>
                                 <Collapse
                                     accordion
                                     defaultActiveKey={['errorMessage']}
                                     items={[{
                                         key: 'errorMessage',
-                                        label: 'Exception details',
+                                        label: i18n.t('common::Exception details'),
                                         children: (
                                             <Text type='danger'>
                                                 <TextArea
@@ -133,25 +134,25 @@ class GlobalErrorBoundary extends React.PureComponent<Props, State> {
                             </Paragraph>
 
                             <Paragraph>
-                                <Text strong>What should I do?</Text>
+                                <Text strong>{i18n.t('common::What should I do?')}</Text>
                             </Paragraph>
                             <ul>
                                 <li>
-                                    Notify an administrator or submit the issue directly on
+                                    {i18n.t('common::Notify an administrator or submit the issue directly on')}
                                     <a href={config.GITHUB_URL}> GitHub. </a>
-                                    Please, provide also:
+                                    {i18n.t('common::Please, provide also:')}
                                     <ul>
-                                        <li>Full error message above</li>
-                                        <li>Steps to reproduce the issue</li>
-                                        <li>Your operating system and browser version</li>
-                                        <li>CVAT version</li>
+                                        <li>{i18n.t('common::Full error message above')}</li>
+                                        <li>{i18n.t('common::Steps to reproduce the issue')}</li>
+                                        <li>{i18n.t('common::Your operating system and browser version')}</li>
+                                        <li>{i18n.t('common::CVAT version')}</li>
                                         <ul>
                                             <li>
-                                                <Text strong>Server: </Text>
+                                                <Text strong>{i18n.t('common::Server: ')}</Text>
                                                 {serverVersion}
                                             </li>
                                             <li>
-                                                <Text strong>UI: </Text>
+                                                <Text strong>{i18n.t('common::UI: ')}</Text>
                                                 {uiVersion}
                                             </li>
                                         </ul>
@@ -159,19 +160,19 @@ class GlobalErrorBoundary extends React.PureComponent<Props, State> {
                                 </li>
                                 {job ? (
                                     <li>
-                                        Press
+                                        {i18n.t('common::Press')}
                                         {/* eslint-disable-next-line */}
-                                        <a onClick={restoreGlobalState}> here </a>
-                                        if you wish CVAT tried to restore your annotation progress or
+                                        <a onClick={restoreGlobalState}> {i18n.t('common::here')} </a>
+                                        {i18n.t('common::if you wish CVAT tried to restore your annotation progress or')}
                                         {/* eslint-disable-next-line */}
-                                        <a onClick={() => window.location.reload()}> update </a>
-                                        the page
+                                        <a onClick={() => window.location.reload()}> {i18n.t('common::update')} </a>
+                                        {i18n.t('common::the page')}
                                     </li>
                                 ) : (
                                     <li>
                                         {/* eslint-disable-next-line */}
-                                        <a onClick={() => window.location.reload()}>Update </a>
-                                        the page
+                                        <a onClick={() => window.location.reload()}>{i18n.t('common::Update')} </a>
+                                        {i18n.t('common::the page')}
                                     </li>
                                 )}
                             </ul>

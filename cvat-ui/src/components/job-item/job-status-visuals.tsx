@@ -5,6 +5,7 @@
 import React from 'react';
 import Tag from 'antd/lib/tag';
 import Space from 'antd/lib/space';
+import { useTranslation } from 'react-i18next';
 import {
     CheckCircleOutlined,
     CloseCircleOutlined,
@@ -74,10 +75,12 @@ interface JobStageLabelProps {
 }
 
 export function JobStageLabel({ stage }: Readonly<JobStageLabelProps>): JSX.Element {
+    const { t } = useTranslation('jobs');
+
     return (
         <span className='cvat-job-stage-label'>
             <JobStageIcon stage={stage} />
-            <span>{stage}</span>
+            <span>{t(stage)}</span>
         </span>
     );
 }
@@ -87,10 +90,12 @@ interface JobStateLabelProps {
 }
 
 export function JobStateLabel({ state }: Readonly<JobStateLabelProps>): JSX.Element {
+    const { t } = useTranslation('jobs');
+
     return (
         <span className='cvat-job-state-label'>
             <JobStateIcon state={state} />
-            <span>{state}</span>
+            <span>{t(state)}</span>
         </span>
     );
 }
@@ -101,13 +106,15 @@ interface JobStageStateBadgesProps {
 }
 
 function JobStageStateBadges({ stage, state }: Readonly<JobStageStateBadgesProps>): JSX.Element {
+    const { t } = useTranslation('jobs');
+
     return (
         <Space size={4} wrap className='cvat-job-stage-state-badges'>
             <Tag className={`cvat-job-stage-tag ${stageClassName(stage)}`} icon={<JobStageIcon stage={stage} />}>
-                {stage}
+                {t(stage)}
             </Tag>
             <Tag className={`cvat-job-state-tag ${stateClassName(state)}`} icon={<JobStateIcon state={state} />}>
-                {state}
+                {t(state)}
             </Tag>
         </Space>
     );

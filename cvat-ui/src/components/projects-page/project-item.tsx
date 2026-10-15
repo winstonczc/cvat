@@ -7,6 +7,7 @@ import React, { useCallback } from 'react';
 import dayjs from 'dayjs';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import Text from 'antd/lib/typography/Text';
 import Card from 'antd/lib/card';
 import Meta from 'antd/lib/card/Meta';
@@ -42,6 +43,7 @@ export default function ProjectItemComponent(props: Props): JSX.Element {
     } = props;
 
     const history = useHistory();
+    const { t } = useTranslation('projects');
     const ribbonPlugins = usePlugins((state: CombinedState) => state.plugins.components.projectItem.ribbon, props);
     const height = useCardHeight();
     const { itemRef, handleContextMenuClick, handleContextMenuCapture } = useContextMenuClick<HTMLDivElement>();
@@ -102,13 +104,12 @@ export default function ProjectItemComponent(props: Props): JSX.Element {
                             {ownerName && (
                                 <>
                                     <Text type='secondary'>
-                                        Created
-                                        {ownerName ? ` by ${ownerName}` : ''}
+                                        {t('Created by {{username}}', { username: ownerName })}
                                     </Text>
                                     <br />
                                 </>
                             )}
-                            <Text type='secondary'>{`Last updated ${updated}`}</Text>
+                            <Text type='secondary'>{t('Last updated {{updated}}', { updated })}</Text>
                         </div>
                         <div>
                             <Button

@@ -3,8 +3,11 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useCallback, useState } from 'react';
+import React, {
+    useCallback, useMemo, useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import jsonLogic from 'json-logic-js';
 import _ from 'lodash';
 import { CombinedState, JobsQuery, SelectedResourceType } from 'reducers';
@@ -25,12 +28,8 @@ import BulkWrapper from 'components/bulk-wrapper';
 import { selectionActions } from 'actions/selection-actions';
 import JobsCSVExportButton from 'components/jobs-page/jobs-csv-export-button';
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues, getFilterConfiguration,
 } from './jobs-filter-configuration';
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues,
-);
 
 interface Props {
     task: Task;
@@ -75,6 +74,17 @@ function setUpJobsList(jobs: Job[], newPage: number, pageSize: number): Job[] {
 function JobListComponent(props: Readonly<Props>): JSX.Element {
     const { task: taskInstance, onJobUpdate } = props;
     const [visibility, setVisibility] = useState(defaultVisibility);
+    const { t, i18n } = useTranslation('tasks');
+    // filter configuration contains localized labels, rebuild it on language change
+    const FilteringComponent = useMemo(
+        () => ResourceFilterHOC(
+            getFilterConfiguration(),
+            localStorageRecentKeyword,
+            localStorageRecentCapacity,
+            getPredefinedFilterValues(),
+        ),
+        [i18n.language],
+    );
 
     const history = useHistory();
     const { id: taskId } = taskInstance;
@@ -130,7 +140,7 @@ function JobListComponent(props: Readonly<Props>): JSX.Element {
             <div className='cvat-jobs-list-wrapper'>
                 <Row>
                     <Col>
-                        <Text className='cvat-text-color cvat-jobs-header'> Jobs </Text>
+                        <Text className='cvat-text-color cvat-jobs-header'>{t(' Jobs ')}</Text>
                         <ResourceSelectionInfo selectedCount={selectedCount} onSelectAll={onSelectAll} />
                     </Col>
                 </Row>
@@ -201,7 +211,7 @@ function JobListComponent(props: Readonly<Props>): JSX.Element {
                     </Col>
                 </div>
             ) : (
-                <Empty description='No jobs found' />
+                <Empty description={t('No jobs found')} />
             )}
             <Row justify='center' align='middle'>
                 <Col>

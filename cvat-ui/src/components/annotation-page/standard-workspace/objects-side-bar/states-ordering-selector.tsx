@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Col } from 'antd/lib/grid';
 import Select from 'antd/lib/select';
 import Text from 'antd/lib/typography/Text';
@@ -17,10 +18,11 @@ interface StatesOrderingSelectorComponentProps {
 
 function StatesOrderingSelectorComponent(props: StatesOrderingSelectorComponentProps): JSX.Element {
     const { statesOrdering, changeStatesOrdering } = props;
+    const { t } = useTranslation('annotation');
 
     return (
         <Col>
-            <Text>Sort by</Text>
+            <Text>{t('Sort by')}</Text>
             <Select
                 size='small'
                 className='cvat-objects-sidebar-ordering-selector'
@@ -29,19 +31,19 @@ function StatesOrderingSelectorComponent(props: StatesOrderingSelectorComponentP
                 onChange={changeStatesOrdering}
             >
                 <Select.Option key={StatesOrdering.ID_DESCENT} value={StatesOrdering.ID_DESCENT}>
-                    {StatesOrdering.ID_DESCENT}
+                    {t('ID - descent')}
                 </Select.Option>
                 <Select.Option key={StatesOrdering.ID_ASCENT} value={StatesOrdering.ID_ASCENT}>
-                    {StatesOrdering.ID_ASCENT}
+                    {t('ID - ascent')}
                 </Select.Option>
                 <Select.Option key={StatesOrdering.UPDATED} value={StatesOrdering.UPDATED}>
-                    {StatesOrdering.UPDATED}
+                    {t('Updated time')}
                 </Select.Option>
                 <Select.Option key={StatesOrdering.LAYER} value={StatesOrdering.LAYER}>
-                    {StatesOrdering.LAYER}
+                    {t('Layer')}
                 </Select.Option>
                 <Select.Option key={StatesOrdering.LABEL_NAME} value={StatesOrdering.LABEL_NAME}>
-                    {StatesOrdering.LABEL_NAME}
+                    {t('Label name')}
                 </Select.Option>
             </Select>
         </Col>

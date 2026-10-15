@@ -4,6 +4,7 @@
 
 import React from 'react';
 import Select from 'antd/lib/select';
+import { useTranslation } from 'react-i18next';
 import { JobStage, JobState } from 'cvat-core-wrapper';
 import { handleDropdownKeyDown } from 'utils/dropdown-utils';
 import { JobStageLabel, JobStateLabel } from './job-status-visuals';
@@ -14,6 +15,8 @@ interface JobStateSelectorProps {
 }
 
 export function JobStateSelector({ value, onSelect }: Readonly<JobStateSelectorProps>): JSX.Element {
+    const { t } = useTranslation('jobs');
+
     return (
         <Select
             className='cvat-job-item-state'
@@ -21,18 +24,18 @@ export function JobStateSelector({ value, onSelect }: Readonly<JobStateSelectorP
             value={value}
             onChange={onSelect}
             onKeyDown={handleDropdownKeyDown}
-            placeholder='Select a state'
+            placeholder={t('Select a state')}
         >
-            <Select.Option value={JobState.NEW} title={JobState.NEW}>
+            <Select.Option value={JobState.NEW} title={t(JobState.NEW)}>
                 <JobStateLabel state={JobState.NEW} />
             </Select.Option>
-            <Select.Option value={JobState.IN_PROGRESS} title={JobState.IN_PROGRESS}>
+            <Select.Option value={JobState.IN_PROGRESS} title={t(JobState.IN_PROGRESS)}>
                 <JobStateLabel state={JobState.IN_PROGRESS} />
             </Select.Option>
-            <Select.Option value={JobState.REJECTED} title={JobState.REJECTED}>
+            <Select.Option value={JobState.REJECTED} title={t(JobState.REJECTED)}>
                 <JobStateLabel state={JobState.REJECTED} />
             </Select.Option>
-            <Select.Option value={JobState.COMPLETED} title={JobState.COMPLETED}>
+            <Select.Option value={JobState.COMPLETED} title={t(JobState.COMPLETED)}>
                 <JobStateLabel state={JobState.COMPLETED} />
             </Select.Option>
         </Select>
@@ -45,6 +48,8 @@ interface JobStageSelectorProps {
 }
 
 export function JobStageSelector({ value, onSelect }: Readonly<JobStageSelectorProps>): JSX.Element {
+    const { t } = useTranslation('jobs');
+
     return (
         <Select
             className='cvat-job-item-stage'
@@ -52,15 +57,15 @@ export function JobStageSelector({ value, onSelect }: Readonly<JobStageSelectorP
             value={value}
             onChange={onSelect}
             onKeyDown={handleDropdownKeyDown}
-            placeholder='Select a stage'
+            placeholder={t('Select a stage')}
         >
-            <Select.Option value={JobStage.ANNOTATION} title={JobStage.ANNOTATION}>
+            <Select.Option value={JobStage.ANNOTATION} title={t(JobStage.ANNOTATION)}>
                 <JobStageLabel stage={JobStage.ANNOTATION} />
             </Select.Option>
-            <Select.Option value={JobStage.VALIDATION} title={JobStage.VALIDATION}>
+            <Select.Option value={JobStage.VALIDATION} title={t(JobStage.VALIDATION)}>
                 <JobStageLabel stage={JobStage.VALIDATION} />
             </Select.Option>
-            <Select.Option value={JobStage.ACCEPTANCE} title={JobStage.ACCEPTANCE}>
+            <Select.Option value={JobStage.ACCEPTANCE} title={t(JobStage.ACCEPTANCE)}>
                 <JobStageLabel stage={JobStage.ACCEPTANCE} />
             </Select.Option>
         </Select>

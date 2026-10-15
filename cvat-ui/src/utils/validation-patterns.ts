@@ -3,35 +3,49 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
+
 const validationPatterns = {
     validatePasswordLength: {
         pattern: /^(?=.{8,256}$)/,
-        message: 'Password must be between 8 and 256 characters',
+        get message(): string {
+            return i18n.t('errors::Password must be between 8 and 256 characters');
+        },
     },
 
     passwordContainsNumericCharacters: {
         pattern: /(?=.*[0-9])/,
-        message: 'Password must have at least 1 numeric characters',
+        get message(): string {
+            return i18n.t('errors::Password must have at least 1 numeric characters');
+        },
     },
 
     passwordContainsUpperCaseCharacter: {
         pattern: /(?=.*[A-Z])/,
-        message: 'Password must have at least 1 uppercase alphabetical character',
+        get message(): string {
+            return i18n.t('errors::Password must have at least 1 uppercase alphabetical character');
+        },
     },
 
     passwordContainsLowerCaseCharacter: {
         pattern: /(?=.*[a-z])/,
-        message: 'Password must have at least 1 lowercase alphabetical character',
+        get message(): string {
+            return i18n.t('errors::Password must have at least 1 lowercase alphabetical character');
+        },
     },
 
     validateUsernameLength: {
         pattern: /^.{5,150}$/u,
-        message: 'Username must be between 5 and 150 characters',
+        get message(): string {
+            return i18n.t('errors::Username must be between 5 and 150 characters');
+        },
     },
 
     validateUsernameCharacters: {
         pattern: /^[\p{L}\p{N}_@.+-]+$/u,
-        message: 'Only letters, numbers, and @/./+/-/_ characters are available',
+        get message(): string {
+            return i18n.t('errors::Only letters, numbers, and @/./+/-/_ characters are available');
+        },
     },
 
     /*
@@ -47,38 +61,52 @@ const validationPatterns = {
     validateName: {
 
         pattern: /^(\p{L}|\p{Pd}|\p{Cf}|\p{Pc}|['\s]){2,}$/gu,
-        message: 'Invalid name',
+        get message(): string {
+            return i18n.t('errors::Invalid name');
+        },
     },
 
     validateAttributeName: {
         pattern: /\S+/,
-        message: 'Invalid name',
+        get message(): string {
+            return i18n.t('errors::Invalid name');
+        },
     },
 
     validateLabelName: {
         pattern: /\S+/,
-        message: 'Invalid name',
+        get message(): string {
+            return i18n.t('errors::Invalid name');
+        },
     },
 
     validateAttributeValue: {
         pattern: /\S+/,
-        message: 'Invalid attribute value',
+        get message(): string {
+            return i18n.t('errors::Invalid attribute value');
+        },
     },
 
     validateURL: {
 
         pattern: /^(https?:\/\/)[^\s$.?#].[^\s]*$/, // url, ip
-        message: 'URL is not valid',
+        get message(): string {
+            return i18n.t('errors::URL is not valid');
+        },
     },
 
     validateOrganizationSlug: {
         pattern: /^[a-zA-Z\d]+$/,
-        message: 'Only Latin characters and numbers are allowed',
+        get message(): string {
+            return i18n.t('errors::Only Latin characters and numbers are allowed');
+        },
     },
 
     validatePhoneNumber: {
         pattern: /^[+]*[-\s0-9]*$/g,
-        message: 'Input phone number is not correct',
+        get message(): string {
+            return i18n.t('errors::Input phone number is not correct');
+        },
     },
 };
 

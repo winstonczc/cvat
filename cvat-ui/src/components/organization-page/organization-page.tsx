@@ -6,6 +6,7 @@
 import './styles.scss';
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import Empty from 'antd/lib/empty';
 import Spin from 'antd/lib/spin';
@@ -18,6 +19,7 @@ import MembersList from './members-list';
 
 function OrganizationPage(): JSX.Element | null {
     const dispatch = useDispatch();
+    const { t } = useTranslation('organizations');
     const {
         organization,
         fetching,
@@ -76,7 +78,7 @@ function OrganizationPage(): JSX.Element | null {
     return (
         <div className='cvat-organization-page'>
             {!organization ? (
-                <Empty description='You are not in an organization' />
+                <Empty description={t('You are not in an organization')} />
             ) : (
                 <>
                     <TopBarComponent

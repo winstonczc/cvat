@@ -6,6 +6,7 @@
 import './styles.scss';
 
 import React from 'react';
+import i18n from 'i18next';
 import { connect } from 'react-redux';
 import Spin from 'antd/lib/spin';
 import Popover from 'antd/lib/popover';
@@ -725,7 +726,7 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
     private onCanvasWarningOccurrence = (event: any): void => {
         const { message, domain } = event.detail;
         notification.warning({
-            message: domain ? `${domain}` : 'Warning',
+            message: domain ? `${domain}` : i18n.t('annotation::Warning'),
             description: message,
             duration: 5,
             className: 'cvat-notification-warning-canvas',
@@ -1187,7 +1188,7 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
                                 } catch (error: any) {
                                     notification.error({
                                         description: error.toString(),
-                                        message: 'Image processing error occurred',
+                                        message: i18n.t('annotation::Image processing error occurred'),
                                         className: 'cvat-notification-notice-image-processing-error',
                                     });
                                 }
@@ -1391,11 +1392,11 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
                     <UpOutlined className='cvat-canvas-image-setups-trigger' />
                 </Popover>
 
-                <CVATTooltip title={`Open layer stack. Current layer ${currentZLayer}`}>
+                <CVATTooltip title={i18n.t('annotation::Open layer stack. Current layer {{layer}}', { layer: currentZLayer })}>
                     <button
                         className='cvat-canvas-layer-stack-trigger'
                         type='button'
-                        aria-label={`Open layer stack. Current layer ${currentZLayer}`}
+                        aria-label={i18n.t('annotation::Open layer stack. Current layer {{layer}}', { layer: currentZLayer })}
                         onClick={(): void => onOpenLayerStack(sidebarCollapsed)}
                     >
                         <Icon component={LayerStackIcon} />

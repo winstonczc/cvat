@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Popover from 'antd/lib/popover';
 import Icon from '@ant-design/icons';
 
@@ -23,6 +24,7 @@ export interface Props {
 const CustomPopover = withVisibilityHandling(Popover, 'draw-polyline');
 function DrawPolylineControl(props: Props): JSX.Element {
     const { canvasInstance, isDrawing, disabled } = props;
+    const { t } = useTranslation('annotation');
     const dynamicPopoverProps = isDrawing ? {
         overlayStyle: {
             display: 'none',
@@ -47,7 +49,7 @@ function DrawPolylineControl(props: Props): JSX.Element {
             placement='right'
             content={<DrawShapePopoverContainer shapeType={ShapeType.POLYLINE} />}
         >
-            <CVATTooltip title='Draw a polyline' placement='right'>
+            <CVATTooltip title={t('Draw a polyline')} placement='right'>
                 <Icon {...dynamicIconProps} component={PolylineIcon} />
             </CVATTooltip>
         </CustomPopover>

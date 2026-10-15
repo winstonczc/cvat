@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Icon from '@ant-design/icons';
 
 import { SplitIcon } from 'icons';
@@ -27,12 +28,13 @@ function SplitControl(props: Props): JSX.Element {
     } = props;
 
     const { normalizedKeyMap } = useSelector((state: CombinedState) => state.shortcuts);
+    const { t } = useTranslation('annotation');
 
     return disabled ? (
         <Icon className='cvat-split-track-control cvat-disabled-canvas-control' component={SplitIcon} />
     ) : (
         <CVATTooltip
-            title={`Split a track ${
+            title={`${t('Split a track')} ${
                 canvasInstance instanceof Canvas3d ?
                     normalizedKeyMap.SWITCH_SPLIT_MODE_STANDARD_3D_CONTROLS :
                     normalizedKeyMap.SWITCH_SPLIT_MODE_STANDARD_CONTROLS

@@ -5,9 +5,10 @@
 
 import './styles.scss';
 import React, {
-    useCallback, useEffect, useRef, useState,
+    useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual } from 'utils/redux';
 import { useHistory, useParams } from 'react-router';
 import Spin from 'antd/lib/spin';
@@ -45,14 +46,10 @@ import DetailsComponent from './details';
 import ProjectTopBar from './top-bar';
 
 import {
-    localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues, config,
+    localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues, getFilterConfig,
 } from './project-tasks-filter-configuration';
 
 const core = getCore();
-
-const FilteringComponent = ResourceFilterHOC(
-    config, localStorageRecentKeyword, localStorageRecentCapacity, predefinedFilterValues,
-);
 
 interface ParamType {
     id: string;
@@ -62,6 +59,13 @@ export default function ProjectPageComponent(): JSX.Element {
     const id = +useParams<ParamType>().id;
     const dispatch = useDispatch();
     const history = useHistory();
+    const { t, i18n } = useTranslation('projects');
+    const FilteringComponent = useMemo(
+        () => ResourceFilterHOC(
+            getFilterConfig(), localStorageRecentKeyword, localStorageRecentCapacity, getPredefinedFilterValues(),
+        ),
+        [i18n.language],
+    );
     const [projectInstance, setProjectInstance] = useState<Project | null>(null);
     const [fechingProject, setFetchingProject] = useState(true);
     const mounted = useRef(false);
@@ -104,7 +108,7 @@ export default function ProjectPageComponent(): JSX.Element {
                 }).catch((error: Error) => {
                     if (mounted.current) {
                         notification.error({
-                            message: 'Could not receive the requested project from the server',
+                            message: i18n.t('projects::Could not receive the requested project from the server'),
                             description: error.toString(),
                         });
                     }
@@ -115,8 +119,8 @@ export default function ProjectPageComponent(): JSX.Element {
                 });
         } else {
             notification.error({
-                message: 'Could not receive the requested project from the server',
-                description: `Requested project id "${id}" is not valid`,
+                message: i18n.t('projects::Could not receive the requested project from the server'),
+                description: i18n.t('projects::Requested project id "{{id}}" is not valid', { id }),
             });
             setFetchingProject(false);
         }
@@ -141,7 +145,7 @@ export default function ProjectPageComponent(): JSX.Element {
 
     const onSelectAll = useCallback(() => {
         dispatch(selectionActions.selectResources(
-            tasks.map((t) => t.id).filter((taskId) => !deletedTasks[taskId]),
+            tasks.map((task) => task.id).filter((taskId) => !deletedTasks[taskId]),
             SelectedResourceType.TASKS,
         ));
     }, [tasks, deletedTasks]);
@@ -242,7 +246,7 @@ export default function ProjectPageComponent(): JSX.Element {
             )}
         </BulkWrapper>
     ) : (
-        <Empty description='No tasks found' />
+        <Empty description={t('No tasks found')} />
     );
 
     return (
@@ -279,7 +283,7 @@ export default function ProjectPageComponent(): JSX.Element {
                                     }}
                                     defaultValue={tasksQuery.search ?? ''}
                                     className='cvat-project-page-tasks-search-bar'
-                                    placeholder='Search ...'
+                                    placeholder={t('Search ...')}
                                 />
                                 <ResourceSelectionInfo
                                     selectedCount={selectedCount}
@@ -347,7 +351,7 @@ export default function ProjectPageComponent(): JSX.Element {
                                                 className='cvat-create-task-button'
                                                 onClick={() => history.push(`/tasks/create?projectId=${id}`)}
                                             >
-                                                Create a new task
+                                                {t('Create a new task')}
                                             </Button>
                                             <Button
                                                 type='primary'
@@ -355,7 +359,7 @@ export default function ProjectPageComponent(): JSX.Element {
                                                 className='cvat-create-multi-tasks-button'
                                                 onClick={() => history.push(`/tasks/create?projectId=${id}&many=true`)}
                                             >
-                                                Create multi tasks
+                                                {t('Create multi tasks')}
                                             </Button>
                                         </>
                                     ) : null}
@@ -366,7 +370,7 @@ export default function ProjectPageComponent(): JSX.Element {
                                             className='cvat-create-audio-task-button'
                                             onClick={() => history.push(`/tasks/create?projectId=${id}&type=audio`)}
                                         >
-                                            Create a new audio task
+                                            {t('Create a new audio task')}
                                         </Button>
                                     ) : null}
                                 </CvatDropdownMenuPaper>

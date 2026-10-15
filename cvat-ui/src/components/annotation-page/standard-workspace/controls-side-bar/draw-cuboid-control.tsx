@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Popover from 'antd/lib/popover';
 import Icon from '@ant-design/icons';
 
@@ -25,6 +26,7 @@ export interface Props {
 const CustomPopover = withVisibilityHandling(Popover, 'draw-cuboid');
 function DrawCuboidControl(props: Props): JSX.Element {
     const { canvasInstance, isDrawing, disabled } = props;
+    const { t } = useTranslation('annotation');
     const dynamicPopoverProps = isDrawing ? {
         overlayStyle: {
             display: 'none',
@@ -49,7 +51,7 @@ function DrawCuboidControl(props: Props): JSX.Element {
             placement='right'
             content={<DrawShapePopoverContainer shapeType={ShapeType.CUBOID} />}
         >
-            <CVATTooltip title='Draw a cuboid' placement='right'>
+            <CVATTooltip title={t('Draw a cuboid')} placement='right'>
                 <Icon {...dynamicIconProps} component={CubeIcon} />
             </CVATTooltip>
         </CustomPopover>

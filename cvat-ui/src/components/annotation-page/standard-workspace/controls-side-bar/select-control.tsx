@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { SelectOutlined } from '@ant-design/icons';
 
 import { Canvas } from 'cvat-canvas-wrapper';
@@ -21,6 +22,7 @@ function SelectControl(props: Props): JSX.Element {
         canvasInstance, activeControl, disabled, updateActiveControl,
     } = props;
     const selecting = activeControl === ActiveControl.SELECT;
+    const { t } = useTranslation('annotation');
 
     const onClick = (): void => {
         if (selecting) {
@@ -36,7 +38,7 @@ function SelectControl(props: Props): JSX.Element {
     return disabled ? (
         <SelectOutlined className='cvat-select-control cvat-disabled-canvas-control' />
     ) : (
-        <CVATTooltip title='Select objects' placement='right'>
+        <CVATTooltip title={t('Select objects')} placement='right'>
             <SelectOutlined
                 className={selecting ?
                     'cvat-select-control cvat-active-canvas-control' :

@@ -7,6 +7,7 @@ import Modal from 'antd/lib/modal';
 import Table from 'antd/lib/table';
 import React from 'react';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { getApplicationKeyMap } from 'utils/mousetrap-react';
 import { shortcutsActions } from 'actions/shortcuts-actions';
 import { CombinedState } from 'reducers';
@@ -41,6 +42,7 @@ function mapDispatchToProps(dispatch: any): DispatchToProps {
 
 function ShortcutsDialog(props: StateToProps & DispatchToProps): JSX.Element | null {
     const { visible, switchShortcutsModalVisible } = props;
+    const { t } = useTranslation('shortcuts');
     const keyMap = getApplicationKeyMap();
 
     const splitToRows = (data: string[]): JSX.Element[] => data.map(
@@ -54,18 +56,18 @@ function ShortcutsDialog(props: StateToProps & DispatchToProps): JSX.Element | n
 
     const columns = [
         {
-            title: 'Name',
+            title: t('Name'),
             dataIndex: 'name',
             key: 'name',
         },
         {
-            title: 'Shortcut',
+            title: t('Shortcut'),
             dataIndex: 'shortcut',
             key: 'shortcut',
             render: splitToRows,
         },
         {
-            title: 'Description',
+            title: t('Description'),
             dataIndex: 'description',
             key: 'description',
         },
@@ -75,14 +77,14 @@ function ShortcutsDialog(props: StateToProps & DispatchToProps): JSX.Element | n
         .filter((key: string) => (!keyMap[key].nonActive))
         .map((key: string, id: number) => ({
             key: id,
-            name: keyMap[key].name || key,
-            description: keyMap[key].description || '',
+            name: t(keyMap[key].name || key),
+            description: t(keyMap[key].description || ''),
             shortcut: keyMap[key].sequences,
         }));
 
     return (
         <Modal
-            title='Active list of shortcuts'
+            title={t('Active list of shortcuts')}
             open={visible}
             closable={false}
             width={800}

@@ -5,6 +5,7 @@
 import './styles.scss';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import Button from 'antd/lib/button';
 import { Row, Col } from 'antd/lib/grid';
 import notification from 'antd/lib/notification';
@@ -23,6 +24,7 @@ const core = getCore();
 function UpdateWebhookPage(): JSX.Element {
     const id = +useParams<ParamType>().id;
     const history = useHistory();
+    const { t } = useTranslation('webhooks');
     const [webhook, setWebhook] = React.useState<CombinedState['webhooks']['current'][number] | null>(null);
     const webhooks = useSelector((state: CombinedState) => state.webhooks.current);
 
@@ -35,8 +37,8 @@ function UpdateWebhookPage(): JSX.Element {
                 }
             }).catch((error: unknown) => {
                 notification.error({
-                    message: 'Failed to fetch the webhook',
-                    description: error instanceof Error ? error.message : 'Unknown error',
+                    message: t('Failed to fetch the webhook'),
+                    description: error instanceof Error ? error.message : t('Unknown error'),
                 });
             });
         } else {
@@ -50,7 +52,7 @@ function UpdateWebhookPage(): JSX.Element {
                 <Col md={20} lg={16} xl={14} xxl={9}>
                     <Button className='cvat-webhooks-go-back' onClick={() => history.goBack()} type='link' size='large'>
                         <LeftOutlined />
-                        Back to webhooks
+                        {t('Back to webhooks')}
                     </Button>
                 </Col>
             </Row>

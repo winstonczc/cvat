@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: MIT
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import Title from 'antd/lib/typography/Title';
 import { Row, Col } from 'antd/lib/grid';
@@ -47,6 +48,7 @@ function ResetPasswordPagePageComponent(props: ResetPasswordConfirmPageComponent
 
     const { fetching, onResetPasswordConfirm } = props;
 
+    const { t } = useTranslation('common');
     const { Content } = Layout;
 
     return (
@@ -54,7 +56,7 @@ function ResetPasswordPagePageComponent(props: ResetPasswordConfirmPageComponent
             <Content>
                 <Row justify='center' align='middle' style={{ height: '100%' }}>
                     <Col {...sizes}>
-                        <Title level={2}> Change password </Title>
+                        <Title level={2}> {t('Change password')} </Title>
                         <ResetPasswordConfirmForm
                             fetching={fetching}
                             onSubmit={(resetPasswordConfirmData: ResetPasswordConfirmData): void => {

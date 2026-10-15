@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+import i18n from 'i18next';
 import { TasksQuery } from 'reducers';
 import { CSVColumn } from 'utils/csv-writer';
 import { getCore, Task } from 'cvat-core-wrapper';
@@ -36,7 +37,9 @@ const columns: CSVColumn<Task>[] = [
 const TasksCSVExportButton = createCSVExportButton<Task, TasksQuery>({
     resourceName: 'tasks',
     className: 'cvat-tasks-export-csv-button',
-    tooltipTitle: 'Export tasks to CSV',
+    get tooltipTitle() {
+        return i18n.t('tasks::Export tasks to CSV');
+    },
     columns,
     uniqueKey: 'id',
     fetchPage: async (query) => {
