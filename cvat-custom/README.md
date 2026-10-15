@@ -24,6 +24,7 @@ override 的形式叠加到上游容器上，因此升级 CVAT 时冲突面极�
 | `scripts/gen-sso-token.py` | 本地验证用：用私钥签一个短期 JWT 并打印完整免登 URL。 |
 | `scripts/gen-keys.sh` | 生成 RS256 密钥对（私钥 0600、公钥 0644，已存在时不覆盖）。 |
 | `scripts/verify-sso.sh` | 端到端免登验证脚本（不需要 UI）。 |
+| `scripts/iframe-test.sh` | 生成一个内嵌 CVAT 的本地测试页，供**浏览器人工验证** iframe 嵌入。 |
 | `keys/` | 存放 SSO 的 RSA 密钥对（`*.pem` 已被 `.gitignore` 忽略，绝不入库）。 |
 | `settings.py` | Django settings overlay：LDAP、跨域/CSRF、Cookie 隔离、摘掉 `XFrameOptionsMiddleware`、注册 SSO 中间件。 |
 | `platform_sso/` | SSO 中间件：拦截 `/api/auth/platform-sso`，验签后建立 CVAT 会话。 |
@@ -163,6 +164,30 @@ bash cvat-custom/scripts/verify-sso.sh --username alice --cvat-url http://localh
 ```bash
 python3 cvat-custom/scripts/gen-sso-token.py -u alice --roles admin,worker
 ```
+
+### iframe 嵌入的浏览器验证
+
+`verify-sso.sh` 只能证明**服务端**不再下发 `X-Frame-Options`，**不能**证明浏览器真的肯渲染。
+最后这一步需要人工用浏览器确认：
+
+```bash
+bash cvat-custom/scripts/iframe-test.sh --username iframetest --ttl 600
+```
+
+脚本会签一个免登 JWT、生成 `/tmp/cvat-iframe-test.html`（一个把免登 URL 塞进 `<iframe>` 的页面），
+用浏览器打开它即可。页面上方有状态条，会显示 iframe 是否触发了 `load`；10 秒内没触发会标红提示。
+
+需要确认三件事：
+
+1. CVAT 标注界面正常显示在页面里（不是空白、不是报错页）；
+2. 无需再输密码，已是 `iframetest` 的登录态；
+3. DevTools 控制台里没有 `Refused to display ... in a frame` / `frame-ancestors` 报错。
+
+> ⚠️ 令牌是**一次性**的：页面打开的那一刻 `jti` 就被消费，**刷新会 400**。要再开一次会话就重跑脚本。
+> 因此手动验证时用 `--ttl 600` 之类的宽裕值，别用默认的 60 秒。
+
+建议至少覆盖 Chrome（普通 + 无痕）、Safari（ITP）、Firefox（严格模式）三种内核 —— 各家对
+第三方 Cookie 的默认策略差异最大，跨域会话能不能活下来主要看这个。
 
 ---
 
