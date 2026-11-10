@@ -15,8 +15,8 @@ import os
 from cvat.settings.production import *  # pylint: disable=wildcard-import
 
 # ---------- 平台集成：平台侧 origin ----------
-PLATFORM_ORIGIN = os.environ.get("PLATFORM_ORIGIN", "http://localhost:5173")
-CVAT_ORIGIN = os.environ.get("CVAT_ORIGIN", "http://localhost:7000")
+PLATFORM_ORIGIN = os.environ.get("PLATFORM_ORIGIN", "http://localhost:3000")
+CVAT_ORIGIN = os.environ.get("CVAT_ORIGIN", "http://localhost:8080")
 
 # ---------- 允许 iframe 嵌入 ----------
 # 这个 Django 版本的 XFrameOptionsMiddleware 不支持 "ALLOWALL" 哨兵值：它会把
@@ -32,9 +32,9 @@ MIDDLEWARE = [
 ]
 
 # ---------- 跨域 / CSRF ----------
+# iframe 内 CVAT 前端对 CVAT API 的请求是同源（同 cvat 子域），平台前端不直接调
+# CVAT API（一律经 SMCB 后端转发），因此不配置 CORS；只需信任平台/CVAT 两个 origin。
 CSRF_TRUSTED_ORIGINS = [o for o in {PLATFORM_ORIGIN, CVAT_ORIGIN} if o]
-CORS_ORIGIN_WHITELIST = [PLATFORM_ORIGIN]  # django-cors-headers==3.5.0 用旧名，不要写成 CORS_ALLOWED_ORIGINS
-CORS_ALLOW_CREDENTIALS = True
 
 # ---------- Cookie（与平台隔离，避免重名）----------
 SESSION_COOKIE_NAME = "cvat_sessionid"
@@ -42,10 +42,8 @@ CSRF_COOKIE_NAME = "cvat_csrftoken"
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
 CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
-_cookie_domain = os.environ.get("COOKIE_DOMAIN")
-if _cookie_domain:
-    SESSION_COOKIE_DOMAIN = _cookie_domain
-    CSRF_COOKIE_DOMAIN = _cookie_domain
+# 不设置 SESSION_COOKIE_DOMAIN：设成 .example.com 会把 CVAT 会话 cookie
+# 泄漏给平台子域的每个请求；iframe 场景 cookie 只发往 cvat 子域即可。
 
 # ---------- 免登 SSO ----------
 MIDDLEWARE = MIDDLEWARE + ["platform_sso.middleware.PlatformSsoMiddleware"]

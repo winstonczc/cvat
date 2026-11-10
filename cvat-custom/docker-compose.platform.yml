@@ -20,12 +20,11 @@ services:
   cvat_server:
     environment:
       DJANGO_SETTINGS_MODULE: settings
-      PLATFORM_ORIGIN: ${PLATFORM_ORIGIN:-http://localhost:5173}
-      CVAT_ORIGIN: ${CVAT_ORIGIN:-http://localhost:7000}
-      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      PLATFORM_ORIGIN: ${PLATFORM_ORIGIN:-http://localhost:3000}
+      CVAT_ORIGIN: ${CVAT_ORIGIN:-http://localhost:8080}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
       PLATFORM_SSO_PUBLIC_KEY_PATH: /opt/cvat/keys/cvat_sso_public.pem
-      PLATFORM_SSO_ISSUER: ${PLATFORM_ORIGIN:-http://localhost:5173}
+      PLATFORM_SSO_ISSUER: ${PLATFORM_ORIGIN:-http://localhost:3000}
       PLATFORM_SSO_AUDIENCE: cvat
       # LDAP：留空则 CVAT 保持 BASIC 认证（本地验证 SSO 时不需要 LLDAP）。
       # 绑定账号为只读 svc-bind，口令走 LLDAP_BIND_PASSWORD（注意：不是

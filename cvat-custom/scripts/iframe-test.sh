@@ -9,7 +9,10 @@
 # 短期 JWT，把它内联进测试页，再告诉你用哪个地址打开。
 #
 # 用法：
-#   bash cvat-custom/scripts/iframe-test.sh [--username NAME] [--cvat-url URL] [--ttl 秒]
+#   bash cvat-custom/scripts/iframe-test.sh [--username NAME] [--cvat-url URL] [--issuer URL] [--ttl 秒]
+#
+# --issuer 默认取环境变量 PLATFORM_ORIGIN，未设置时为 http://localhost:3000；
+# 生产环境必须与 CVAT 的 PLATFORM_ORIGIN / PLATFORM_SSO_ISSUER 一致。
 #
 # 脚本会打印测试页路径（默认 /tmp/cvat-iframe-test.html），用浏览器打开即可。
 #
@@ -23,7 +26,9 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 GEN_TOKEN="${SCRIPT_DIR}/gen-sso-token.py"
 
 USERNAME="ssotest"
-CVAT_URL="http://localhost:7000"
+# 浏览器访问 CVAT UI 必须走 traefik :8080；7000 是 cvat_server 纯 API 端口，/ 返回 410。
+CVAT_URL="http://localhost:8080"
+ISSUER="${PLATFORM_ORIGIN:-http://localhost:3000}"
 OUT_FILE="/tmp/cvat-iframe-test.html"
 # 手动验证用，默认给 5 分钟；生产签发仍是 60 秒，这里放宽只是为了让测试不手忙脚乱。
 TTL=300
@@ -34,6 +39,8 @@ while [[ $# -gt 0 ]]; do
     --username=*) USERNAME="${1#*=}"; shift ;;
     --cvat-url)   CVAT_URL="$2"; shift 2 ;;
     --cvat-url=*) CVAT_URL="${1#*=}"; shift ;;
+    --issuer)     ISSUER="$2"; shift 2 ;;
+    --issuer=*)   ISSUER="${1#*=}"; shift ;;
     --ttl)        TTL="$2"; shift 2 ;;
     --ttl=*)      TTL="${1#*=}"; shift ;;
     --out)        OUT_FILE="$2"; shift 2 ;;
@@ -63,7 +70,7 @@ fi
 
 printf '签发解释器 : %s\n' "${GEN_DESC}"
 
-SSO_URL="$("${GEN_CMD[@]}" --username "${USERNAME}" --cvat-url "${CVAT_URL}" --next / --ttl "${TTL}" 2>/dev/null | tail -n1)"
+SSO_URL="$("${GEN_CMD[@]}" --username "${USERNAME}" --cvat-url "${CVAT_URL}" --issuer "${ISSUER}" --next / --ttl "${TTL}" 2>/dev/null | tail -n1)"
 if [[ -z "${SSO_URL}" ]]; then
   echo "❌ 签发免登 URL 失败" >&2
   exit 1
@@ -131,6 +138,10 @@ cat > "${OUT_FILE}" <<HTML
 HTML
 
 printf '\n✅ 测试页已生成：%s\n' "${OUT_FILE}"
+printf '   CSP frame-ancestors 只允许 http://localhost:3000，因此不要用 file:// 直接打开，\n'
+printf '   请从该目录起一个静态服务器，让页面来源与平台一致：\n'
+printf '     python3 -m http.server 3000 --directory %s\n' "$(dirname "${OUT_FILE}")"
+printf '     然后打开 http://localhost:3000/%s\n\n' "$(basename "${OUT_FILE}")"
 printf '   用浏览器打开它，然后确认：\n'
 printf '     1) CVAT 标注界面是否正常显示在页面里（而不是空白/报错）\n'
 printf '     2) 右上角是否是 %s 已登录状态（无需再输密码）\n' "${USERNAME}"

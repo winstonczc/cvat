@@ -151,7 +151,7 @@ bash cvat-custom/scripts/verify-sso.sh
 可覆盖用户名：
 
 ```bash
-bash cvat-custom/scripts/verify-sso.sh --username alice --cvat-url http://localhost:7000
+bash cvat-custom/scripts/verify-sso.sh --username alice --cvat-url http://localhost:7000 --issuer http://localhost:3000
 ```
 
 脚本依赖：`docker`、`curl`、`python3`。签发用的 `pyjwt[crypto]` **宿主没有也能跑** ——
@@ -171,7 +171,7 @@ python3 cvat-custom/scripts/gen-sso-token.py -u alice --roles admin,worker
 最后这一步需要人工用浏览器确认：
 
 ```bash
-bash cvat-custom/scripts/iframe-test.sh --username iframetest --ttl 600
+bash cvat-custom/scripts/iframe-test.sh --username iframetest --cvat-url http://localhost:8080 --issuer http://localhost:3000 --ttl 600
 ```
 
 脚本会签一个免登 JWT、生成 `/tmp/cvat-iframe-test.html`（一个把免登 URL 塞进 `<iframe>` 的页面），
@@ -194,13 +194,13 @@ bash cvat-custom/scripts/iframe-test.sh --username iframetest --ttl 600
 ## 生产部署注意事项
 
 1. **必须替换 nginx 里的来源占位值。** `cvat-custom/nginx.conf` 与 `cvat-custom/react_nginx.conf`
-   中写死了 `http://localhost:5173`（nginx 不会替换 `add_header` 值里的 `${...}`，故写死以便排查）。
+   中写死了 `http://localhost:3000`（nginx 不会替换 `add_header` 值里的 `${...}`，故写死以便排查）。
    上线前替换为实际平台域名，例如 `https://platform.example.com`。
 2. **按生产环境设置环境变量。** 至少确认：
-   - `PLATFORM_ORIGIN` = 平台实际来源（写入 CSP、CSRF/CORS 白名单、JWT `iss`）；
-   - `CVAT_ORIGIN` = CVAT 实际对外来源；
-   - `COOKIE_DOMAIN` = 需要跨子域共享登录态时填写（如 `.example.com`）；
-   - `COOKIE_SECURE` = **HTTPS 环境必须设为 `true`**。
+   - `PLATFORM_ORIGIN` = 平台实际来源（写入 CSP、CSRF 白名单、JWT `iss`）；
+   - `CVAT_ORIGIN` = CVAT 实际对外来源（浏览器访问 UI 的入口，如 `http://localhost:8080`）；
+   - `COOKIE_SECURE` = **HTTPS 环境必须设为 `true`**；
+   - **不要设置** `COOKIE_DOMAIN`：会把 CVAT 会话 cookie 泄漏给平台子域。
 3. **私钥绝不入库。** `cvat-custom/keys/.gitignore` 已忽略 `*.pem`；私钥只放在部署机/密钥管理系统，
    仓库里只应有公钥或干脆都不放。
 4. **LDAP 段按需启用。** 仅当设置了 `LLDAP_URI` 时，`settings.py` 才会启用 `django_auth_ldap`

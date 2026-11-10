@@ -85,17 +85,64 @@ class PlatformSsoMiddleware:
             logger.warning("platform-sso: rejected, disabled user (sub=%s)", claims["sub"])
             return HttpResponseForbidden("user is disabled")
 
-        self._apply_roles(user, claims.get("roles") or [])
+        roles = claims.get("roles") or []
+        self._apply_roles(user, roles)
+
+        # 决策 5：workspace ↔ CVAT Organization 隔离。JWT 的 org claim 由平台签发，
+        # 这里幂等同步成员关系，并把 org 参数带进跳转地址，让 CVAT UI 进入组织上下文。
+        org_slug = claims.get("org")
+        if org_slug:
+            self._ensure_membership(user, org_slug, roles)
+            next_path = self._with_org(next_path, org_slug)
 
         login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 
         logger.info(
-            "platform-sso: login ok username=%s jti=%s next=%s",
+            "platform-sso: login ok username=%s jti=%s org=%s next=%s",
             user.username,
             jti,
+            org_slug,
             next_path,
         )
         return HttpResponseRedirect(next_path)
+
+    @staticmethod
+    def _with_org(next_path, org_slug):
+        """Append the organization slug so the CVAT UI selects the right org."""
+        separator = "&" if "?" in next_path else "?"
+        return f"{next_path}{separator}org={org_slug}"
+
+    @staticmethod
+    def _ensure_membership(user, org_slug, roles):
+        """Idempotently add/refresh the user's Organization membership (decision 5)."""
+        from cvat.apps.organizations.models import Membership, Organization
+        from django.utils import timezone
+
+        try:
+            organization = Organization.objects.get(slug=org_slug)
+        except Organization.DoesNotExist:
+            # 组织由平台侧负责创建；这里不兜底，避免用未校验的 slug 建组织。
+            logger.warning("platform-sso: organization not found, slug=%s", org_slug)
+            return
+
+        if ADMIN_ROLE in roles:
+            role = "maintainer"
+        elif REVIEWER_ROLE in roles:
+            role = "supervisor"
+        else:
+            role = "worker"
+
+        Membership.objects.update_or_create(
+            user=user,
+            organization=organization,
+            defaults={
+                "role": role,
+                # CVAT Membership.is_active 默认为 False，必须显式置 True，
+                # 否则用户能看到组织但所有组织内资源不可访问。
+                "is_active": True,
+                "joined_date": timezone.now(),
+            },
+        )
 
     @staticmethod
     def _safe_next(next_path):

@@ -13,7 +13,10 @@
 #   5. /api/users/self 响应里没有 X-Frame-Options（或不是 deny），说明已允许 iframe 嵌入。
 #
 # 用法：
-#   bash cvat-custom/scripts/verify-sso.sh [--username NAME] [--cvat-url URL]
+#   bash cvat-custom/scripts/verify-sso.sh [--username NAME] [--cvat-url URL] [--issuer URL]
+#
+# --issuer 默认取环境变量 PLATFORM_ORIGIN，未设置时为 http://localhost:3000；
+# 生产环境必须与 CVAT 的 PLATFORM_ORIGIN / PLATFORM_SSO_ISSUER 一致。
 
 set -euo pipefail
 
@@ -23,6 +26,7 @@ GEN_TOKEN="${SCRIPT_DIR}/gen-sso-token.py"
 
 USERNAME="ssotest"
 CVAT_URL="http://localhost:7000"
+ISSUER="${PLATFORM_ORIGIN:-http://localhost:3000}"
 
 RESP_FILE="/tmp/sso_resp.txt"
 SELF_FILE="/tmp/sso_self.json"
@@ -41,10 +45,12 @@ while [[ $# -gt 0 ]]; do
     --username=*) USERNAME="${1#*=}"; shift ;;
     --cvat-url)  CVAT_URL="$2"; shift 2 ;;
     --cvat-url=*) CVAT_URL="${1#*=}"; shift ;;
+    --issuer)    ISSUER="$2"; shift 2 ;;
+    --issuer=*)  ISSUER="${1#*=}"; shift ;;
     -h|--help)
       grep '^# ' "$0" | sed 's/^# \{0,1\}//'
       exit 0 ;;
-    *) die "未知参数：$1（可用：--username、--cvat-url）" ;;
+    *) die "未知参数：$1（可用：--username、--cvat-url、--issuer）" ;;
   esac
 done
 
@@ -93,7 +99,7 @@ if [[ ! -f "${GEN_TOKEN}" ]]; then
 fi
 
 set +e
-SSO_URL="$("${GEN_CMD[@]}" --username "${USERNAME}" --cvat-url "${CVAT_URL}" 2>/tmp/sso_gen.err | tail -n1)"
+SSO_URL="$("${GEN_CMD[@]}" --username "${USERNAME}" --cvat-url "${CVAT_URL}" --issuer "${ISSUER}" 2>/tmp/sso_gen.err | tail -n1)"
 GEN_RC=$?
 set -e
 if [[ ${GEN_RC} -ne 0 || -z "${SSO_URL}" ]]; then

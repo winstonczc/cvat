@@ -48,7 +48,7 @@ def parse_args():
         default=str(DEFAULT_KEY_PATH),
         help="私钥路径，默认 cvat-custom/keys/cvat_sso_private.pem（相对仓库根解析）",
     )
-    parser.add_argument("--issuer", default="http://localhost:5173", help="JWT 签发者 iss")
+    parser.add_argument("--issuer", default="http://localhost:3000", help="JWT 签发者 iss")
     parser.add_argument("--audience", default="cvat", help="JWT 受众 aud，默认 cvat")
     parser.add_argument("--ttl", type=int, default=60, help="有效期（秒），默认 60")
     parser.add_argument(
