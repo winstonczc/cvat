@@ -38,7 +38,13 @@ CSRF_TRUSTED_ORIGINS = [o for o in {PLATFORM_ORIGIN, CVAT_ORIGIN} if o]
 
 # ---------- Cookie（与平台隔离，避免重名）----------
 SESSION_COOKIE_NAME = "cvat_sessionid"
-CSRF_COOKIE_NAME = "cvat_csrftoken"
+# 不要改 CSRF_COOKIE_NAME：CVAT 前端 cvat-core/src/axios-config.ts 硬编码
+#   xsrfCookieName = 'csrftoken'
+# 改成本地名字后，UI 所有写请求都会报
+#   "CSRF Failed: CSRF token missing"
+# 平台和 CVAT 是不同子域，即使都叫 csrftoken 也不会互相覆盖（Cookie 按 host 隔离），
+# 因此保持 Django 默认值。
+# CSRF_COOKIE_NAME = "cvat_csrftoken"   # ← 不要启用
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "false").lower() == "true"
 CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE

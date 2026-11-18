@@ -43,3 +43,5 @@ services:
   cvat_ui:
     volumes:
       - ./cvat-custom/react_nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # iframe 嵌入时隐藏顶部导航的静态 CSS/JS
+      - ./cvat-custom/embedded:/etc/nginx/cvat-embedded:ro

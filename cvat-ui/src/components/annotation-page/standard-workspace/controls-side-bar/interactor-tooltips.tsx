@@ -4,7 +4,6 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Image from 'antd/lib/image';
 import Paragraph from 'antd/lib/typography/Paragraph';
 import Text from 'antd/lib/typography/Text';
 
@@ -38,7 +37,7 @@ function InteractorTooltips(props: Props): JSX.Element {
                             <Text>{t('Negative points can be added by right-clicking the image. ')}</Text>
                         ) : null}
                     </Paragraph>
-                    {gif ? <Image className='cvat-interactor-tip-image' alt={t('Example gif')} src={gif} /> : null}
+                    {gif ? <img className='cvat-interactor-tip-image' alt={t('Example gif')} src={gif} /> : null}
                 </>
             ) : (
                 <Text>{t('Select an interactor to see help message')}</Text>

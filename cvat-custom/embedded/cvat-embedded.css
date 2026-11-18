@@ -1,0 +1,9 @@
+/* 仅在 iframe 嵌入时生效：由 cvat-embedded.js 给 <html> 加 cvat-embedded 类 */
+html.cvat-embedded .cvat-header {
+  display: none !important;
+}
+
+/* 顶部导航隐藏后，通知不要再按 header 高度下移 */
+html.cvat-embedded .ant-notification {
+  top: 0 !important;
+}
