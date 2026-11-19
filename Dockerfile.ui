@@ -19,6 +19,11 @@ COPY cvat-data/package.json /tmp/cvat-data/
 WORKDIR /tmp/
 RUN DISABLE_HUSKY=1 yarn install --immutable
 
+# react-color 2.19.3 的 Saturation 组件在卸载时可能沿着 window.parent 查找容器，
+# 在跨域 iframe 中访问 parent.document 会抛 SecurityError。
+# 限制它只在当前 window 内查找，避免嵌入模式下的控制台报错。
+RUN node -e "const fs=require('fs'),path=require('path'); const root='/tmp/node_modules/react-color'; const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]); let n=0; if(fs.existsSync(root)){ for(const f of walk(root)){ if(!/\\.(js|mjs)$/.test(f)) continue; const s=fs.readFileSync(f,'utf8'); const t=s.replace(/while \\(!renderWindow\\.document\\.contains\\(container\\)/g,'while (renderWindow !== window && !renderWindow.document.contains(container)'); if(t!==s){fs.writeFileSync(f,t); n++;} } } console.log('patched react-color files:', n);"
+
 # Build source code
 COPY cvat-data/ /tmp/cvat-data/
 COPY cvat-core/ /tmp/cvat-core/
